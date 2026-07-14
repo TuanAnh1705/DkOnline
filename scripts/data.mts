@@ -21,10 +21,10 @@ export interface ProcedureSpec {
   steps: StepSpec[];
 }
 
-// Link đăng ký từng thủ tục trên Cổng DVC Quốc gia (theo mã thủ tục)
-const dvc = (code: string) =>
-  `https://dichvucong.gov.vn/p/home/dvc-chi-tiet-thu-tuc-hanh-chinh.html?ma_thu_tuc=${code}`;
-const LIEN_THONG = "https://lienthong.dichvucong.gov.vn/";
+// Link mở thủ tục trên Cổng DVC Quốc gia (route tìm kiếm hợp lệ + từ khoá)
+const search = (kw: string) =>
+  `https://dichvucong.gov.vn/tim-kiem-thu-tuc-hanh-chinh?keyword=${encodeURIComponent(kw)}`;
+const LIEN_THONG = "https://dichvucong.gov.vn/thu-tuc-hanh-chinh-lien-thong";
 
 export const PROCEDURES: ProcedureSpec[] = [
   {
@@ -37,7 +37,7 @@ export const PROCEDURES: ProcedureSpec[] = [
     categoryName: "Hộ tịch",
     dir: "D:/NopHsOnline/dkKetHon",
     video: "HuongDan_DangKyKetHon.mp4",
-    registrationUrl: dvc("1.000894"),
+    registrationUrl: search("đăng ký kết hôn"),
     order: 1,
     steps: [
       { title: "Truy cập Cổng Dịch vụ công", content: "Vào địa chỉ dichvucong.gov.vn và nhấn nút Đăng nhập ở góc trên bên phải màn hình." },
@@ -77,7 +77,7 @@ export const PROCEDURES: ProcedureSpec[] = [
     categoryName: "Hộ tịch",
     dir: "D:/NopHsOnline/dkiKhaiSinh",
     video: "HuongDan_DangKyKhaiSinh.mp4",
-    registrationUrl: dvc("1.001193"),
+    registrationUrl: search("đăng ký khai sinh"),
     order: 2,
     steps: [
       { imgIndex: 10, title: "Đăng nhập VNeID", content: "Truy cập dichvucong.gov.vn và đăng nhập bằng tài khoản VNeID: nhập số định danh cá nhân và mật khẩu, rồi nhấn Đăng nhập." },
@@ -113,7 +113,7 @@ export const PROCEDURES: ProcedureSpec[] = [
     categoryName: "Hộ tịch",
     dir: "D:/NopHsOnline/dkiLaiKhaiSinh",
     video: "HuongDan_DangKyLaiKhaiSinh.mp4",
-    registrationUrl: dvc("1.004884"),
+    registrationUrl: search("đăng ký lại khai sinh"),
     order: 3,
     steps: [
       { imgIndex: 16, title: "Tìm thủ tục đăng ký lại khai sinh", content: "Sau khi đăng nhập, gõ 'đăng ký lại khai sinh' vào ô tìm kiếm và chọn Thủ tục đăng ký lại khai sinh (mã 1.004884)." },
@@ -149,7 +149,7 @@ export const PROCEDURES: ProcedureSpec[] = [
     categoryName: "Hộ tịch",
     dir: "D:/NopHsOnline/dkKhaiTu",
     video: "HuongDan_DangKyKhaiTu.mp4",
-    registrationUrl: dvc("1.000656"),
+    registrationUrl: search("đăng ký khai tử"),
     order: 4,
     steps: [
       { imgIndex: 24, title: "Tìm thủ tục đăng ký khai tử", content: "Sau khi đăng nhập, gõ 'đăng ký khai tử' vào ô tìm kiếm và chọn Thủ tục đăng ký khai tử (mã 1.000656)." },
@@ -191,7 +191,7 @@ export const PROCEDURES: ProcedureSpec[] = [
     categoryName: "Hộ tịch",
     dir: "D:/NopHsOnline/xnTinhTrangHonNhan",
     video: "HuongDan_CapGiayXacNhanTinhTrangHonNhan.mp4",
-    registrationUrl: dvc("1.004873"),
+    registrationUrl: search("xác nhận tình trạng hôn nhân"),
     order: 5,
     steps: [
       { imgIndex: 22, title: "Truy cập Cổng Dịch vụ công", content: "Vào dichvucong.gov.vn và nhấn nút Đăng nhập ở góc trên bên phải." },

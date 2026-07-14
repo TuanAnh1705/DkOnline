@@ -103,7 +103,7 @@ export default async function ProcedureDetailPage({
               rel="noreferrer"
               className={`mt-6 ${buttonClass("primary", "lg")}`}
             >
-              Đến trang đăng ký hồ sơ
+              Nộp hồ sơ trên Cổng DVC
               <ExternalLink className="size-5" />
             </a>
           )}
