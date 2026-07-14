@@ -1,0 +1,76 @@
+// Prisma schema — TiDB / MySQL (relationMode = "prisma" để tương thích TiDB Cloud)
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+enum ProcedureStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         Role     @default(ADMIN)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String?     @db.Text
+  icon        String? // tên icon lucide-react (vd: "FileText")
+  color       String? // mã màu accent (vd: "#2563eb")
+  order       Int         @default(0)
+  procedures  Procedure[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Procedure {
+  id              String          @id @default(cuid())
+  title           String
+  slug            String          @unique
+  summary         String?         @db.Text
+  categoryId      String?
+  category        Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  thumbnailUrl    String?         @db.Text
+  videoUrl        String?         @db.Text // video hướng dẫn (UploadThing URL)
+  registrationUrl String?         @db.Text // URL đăng ký hồ sơ trực tuyến
+  status          ProcedureStatus @default(PUBLISHED)
+  order           Int             @default(0)
+  steps           Step[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([categoryId])
+  @@index([status])
+}
+
+model Step {
+  id          String    @id @default(cuid())
+  procedureId String
+  procedure   Procedure @relation(fields: [procedureId], references: [id], onDelete: Cascade)
+  order       Int       @default(0)
+  title       String? // tiêu đề ngắn của bước
+  content     String    @db.Text // mô tả bước bằng chữ
+  imageUrl    String?   @db.Text // ảnh minh hoạ bước (UploadThing URL)
+
+  @@index([procedureId])
+}
