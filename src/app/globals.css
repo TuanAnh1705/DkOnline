@@ -3,30 +3,41 @@
 @theme {
   --font-sans:
     var(--font-be-vietnam), ui-sans-serif, system-ui, sans-serif;
+  /* Font hiển thị — serif trang trọng cho tiêu đề lớn */
+  --font-display:
+    var(--font-lora), "Times New Roman", Georgia, serif;
 
-  /* Thương hiệu — xanh dương tin cậy */
-  --color-brand-50: #eff6ff;
-  --color-brand-100: #dbeafe;
-  --color-brand-200: #bfdbfe;
-  --color-brand-300: #93c5fd;
-  --color-brand-400: #60a5fa;
-  --color-brand-500: #3b82f6;
-  --color-brand-600: #2563eb;
-  --color-brand-700: #1d4ed8;
-  --color-brand-800: #1e40af;
-  --color-brand-900: #1e3a8a;
+  /* Thương hiệu — ĐỎ SƠN MÀI (sơn son) */
+  --color-brand-50: #fdf4f2;
+  --color-brand-100: #fbe4e1;
+  --color-brand-200: #f5c6c1;
+  --color-brand-300: #ec9d96;
+  --color-brand-400: #dd6c64;
+  --color-brand-500: #cb4139;
+  --color-brand-600: #b01e23;
+  --color-brand-700: #921419;
+  --color-brand-800: #7a1518;
+  --color-brand-900: #641416;
 
-  /* Điểm nhấn — cam ấm (giống cổng DVC quốc gia) */
-  --color-accent-400: #fb923c;
-  --color-accent-500: #f97316;
-  --color-accent-600: #ea580c;
+  /* Điểm nhấn — VÀNG THẾP (thếp vàng) */
+  --color-accent-300: #ecd488;
+  --color-accent-400: #dcbb59;
+  --color-accent-500: #c9a227;
+  --color-accent-600: #a9861b;
+  --color-accent-700: #866713;
+
+  /* Trung tính ấm — giấy dó / ngà */
+  --color-cream: #faf6ef;
+  --color-parchment: #f3ebdd;
+  --color-ink: #241c16;
+  --color-line: #e8dcc6;
 
   --radius-xl2: 1.25rem;
 }
 
 :root {
-  --background: #f6f8fc;
-  --foreground: #0f172a;
+  --background: #faf6ef;
+  --foreground: #241c16;
 }
 
 html {
@@ -57,27 +68,46 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Thanh cuộn mảnh, hiện đại */
+/* Thanh cuộn mảnh, tông ấm */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: #d8c9ad transparent;
 }
 *::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 *::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #d8c9ad;
   border-radius: 999px;
 }
+::selection {
+  background: color-mix(in srgb, var(--color-accent-500) 30%, transparent);
+  color: var(--color-brand-800);
+}
 
-/* Tiện ích dùng lại */
+/* ── Tiện ích dùng lại ─────────────────────────────── */
+
+/* Chữ ánh đỏ → vàng thếp (sơn son thếp vàng) */
 @utility text-gradient {
   background: linear-gradient(
     100deg,
     var(--color-brand-700),
-    var(--color-brand-500) 55%,
-    var(--color-accent-500)
+    var(--color-brand-500) 40%,
+    var(--color-accent-500) 92%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Chữ ánh vàng thếp */
+@utility gold-text {
+  background: linear-gradient(
+    100deg,
+    var(--color-accent-600),
+    var(--color-accent-400) 45%,
+    #f5e2a0 92%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -85,17 +115,37 @@ body {
 }
 
 @utility glass {
-  background: color-mix(in srgb, white 72%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: color-mix(in srgb, #fbf7f0 74%, transparent);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
 }
 
-/* Nền lưới mờ cho hero */
+/* Nền lưới ấm mờ */
 @utility grid-bg {
   background-image:
-    linear-gradient(to right, #e2e8f0 1px, transparent 1px),
-    linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
-  background-size: 44px 44px;
+    linear-gradient(to right, #e8dcc6 1px, transparent 1px),
+    linear-gradient(to bottom, #e8dcc6 1px, transparent 1px);
+  background-size: 46px 46px;
+}
+
+/* Đường chỉ vàng mảnh (kim tuyến) */
+@utility rule-gold {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-accent-500) 20%,
+    var(--color-accent-400) 50%,
+    var(--color-accent-500) 80%,
+    transparent
+  );
+}
+
+/* Viền thếp vàng cho thẻ/khối nổi bật */
+@utility ring-gold {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-accent-500) 55%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, #fff 40%, transparent);
 }
 
 /* Nội dung bước hướng dẫn (xuống dòng tự nhiên) */

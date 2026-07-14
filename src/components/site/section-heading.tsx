@@ -21,19 +21,20 @@ export function SectionHeading({
         <Reveal>
           <span
             className={cn(
-              "inline-flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.18em] text-brand-600",
+              "inline-flex items-center gap-2.5 text-xs font-bold uppercase tracking-[0.18em] text-accent-600",
               center && "justify-center",
             )}
           >
-            <span className="h-px w-7 bg-brand-400/70" />
+            <span className="rule-gold h-px w-8" />
             {eyebrow}
+            {center && <span className="rule-gold h-px w-8" />}
           </span>
         </Reveal>
       )}
       <RevealText
         as="h2"
         text={title}
-        className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl"
+        className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl"
       />
       {desc && (
         <Reveal delay={0.15}>

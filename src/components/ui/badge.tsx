@@ -1,13 +1,14 @@
 import { cn } from "@/lib/utils";
 
-type Tone = "brand" | "green" | "amber" | "slate" | "accent";
+type Tone = "brand" | "green" | "amber" | "slate" | "accent" | "gold";
 
 const tones: Record<Tone, string> = {
   brand: "bg-brand-50 text-brand-700 ring-brand-600/15",
   green: "bg-emerald-50 text-emerald-700 ring-emerald-600/15",
   amber: "bg-amber-50 text-amber-700 ring-amber-600/15",
-  slate: "bg-slate-100 text-slate-600 ring-slate-500/15",
-  accent: "bg-orange-50 text-accent-600 ring-accent-500/15",
+  slate: "bg-parchment text-ink/70 ring-line",
+  accent: "bg-accent-500/10 text-accent-700 ring-accent-500/25",
+  gold: "bg-accent-400/15 text-accent-700 ring-accent-500/30",
 };
 
 export function Badge({

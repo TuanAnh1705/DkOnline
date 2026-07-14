@@ -36,18 +36,20 @@ export function SiteHeader() {
       className={cn(
         "sticky top-0 z-40 transition-all duration-300",
         scrolled
-          ? "glass border-b border-white/60 shadow-sm shadow-slate-900/5"
+          ? "glass border-b border-accent-500/20 shadow-sm shadow-brand-900/5"
           : "bg-transparent",
       )}
     >
+      {/* chỉ vàng thếp mảnh ở đỉnh */}
+      <div className="rule-gold h-px w-full opacity-70" />
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link href="/" className="group flex items-center gap-2.5">
           <LogoMark className="size-9 transition group-hover:scale-105" />
-          <span className="flex flex-col leading-none">
-            <span className="text-[15px] font-extrabold tracking-tight text-slate-900">
+          <span className="flex flex-col gap-0.5 leading-tight">
+            <span className="font-display text-[16px] font-bold leading-tight tracking-tight text-ink">
               Cẩm nang hồ sơ
             </span>
-            <span className="text-[11px] font-medium text-slate-500">
+            <span className="text-[10.5px] font-semibold uppercase leading-tight tracking-[0.14em] text-accent-600">
               Dịch vụ công trực tuyến
             </span>
           </span>
@@ -65,13 +67,16 @@ export function SiteHeader() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "rounded-lg px-3 py-2 text-sm font-semibold transition",
+                  "relative rounded-lg px-3 py-2 text-sm font-semibold transition",
                   active
-                    ? "bg-brand-50 text-brand-700"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                    ? "text-brand-700"
+                    : "text-ink/70 hover:bg-brand-50/70 hover:text-brand-700",
                 )}
               >
                 {item.label}
+                {active && (
+                  <span className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-gradient-to-r from-brand-600 to-accent-500" />
+                )}
               </Link>
             );
           })}

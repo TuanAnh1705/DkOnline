@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { buttonClass } from "@/components/ui/button";
 import { CategoryIcon } from "@/components/icon";
 import { Reveal } from "@/components/motion/reveal";
+import { DrumMotif } from "@/components/site/ornament";
 import type { StepData } from "@/types";
 
 export const revalidate = 120;
@@ -56,12 +57,15 @@ export default async function ProcedureDetailPage({
   return (
     <div>
       {/* Header */}
-      <section className="relative overflow-hidden border-b border-slate-200 bg-white">
-        <div className="pointer-events-none absolute -top-20 right-0 h-72 w-72 rounded-full bg-brand-400/15 blur-3xl" />
+      <section className="relative overflow-hidden border-b border-line bg-gradient-to-b from-parchment to-cream">
+        <div className="pointer-events-none absolute -top-24 right-0 h-80 w-80 opacity-[0.07]">
+          <DrumMotif className="h-full w-full" />
+        </div>
+        <div className="pointer-events-none absolute -top-20 right-10 h-56 w-56 rounded-full bg-brand-400/15 blur-3xl" />
         <div className="relative mx-auto max-w-4xl px-4 py-12 sm:px-6">
           <Link
             href="/#thu-tuc"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 transition hover:text-brand-600"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink/50 transition hover:text-brand-600"
           >
             <ArrowLeft className="size-4" /> Tất cả thủ tục
           </Link>
@@ -87,11 +91,11 @@ export default async function ProcedureDetailPage({
             )}
           </div>
 
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+          <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
             {procedure.title}
           </h1>
           {procedure.summary && (
-            <p className="mt-3 max-w-2xl text-lg leading-relaxed text-slate-600">
+            <p className="mt-3 max-w-2xl text-lg leading-relaxed text-ink/65">
               {procedure.summary}
             </p>
           )}
@@ -124,11 +128,11 @@ export default async function ProcedureDetailPage({
         {procedure.videoUrl && (
           <div className="mt-16 scroll-mt-20" id="video">
             <Reveal>
-              <div className="mb-4 flex items-center gap-2">
-                <span className="grid size-9 place-items-center rounded-xl bg-accent-500/10 text-accent-600">
+              <div className="mb-4 flex items-center gap-2.5">
+                <span className="grid size-9 place-items-center rounded-xl bg-brand-600 text-accent-300 ring-1 ring-accent-500/50">
                   <PlayCircle className="size-5" />
                 </span>
-                <h2 className="text-2xl font-extrabold tracking-tight text-slate-900">
+                <h2 className="font-display text-2xl font-bold tracking-tight text-ink">
                   Video hướng dẫn
                 </h2>
               </div>
@@ -142,10 +146,13 @@ export default async function ProcedureDetailPage({
 
         {/* CTA cuối */}
         <Reveal className="mt-16">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-700 via-brand-600 to-brand-800 p-8 text-white shadow-2xl shadow-brand-700/30 sm:p-12">
-            <div className="pointer-events-none absolute -right-10 -top-10 h-52 w-52 rounded-full bg-white/10 blur-2xl" />
+          <div className="ring-gold relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-700 via-brand-600 to-brand-800 p-8 text-white shadow-2xl shadow-brand-800/30 sm:p-12">
+            <div className="pointer-events-none absolute -right-10 -top-10 h-52 w-52 rounded-full bg-accent-400/15 blur-2xl" />
+            <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 opacity-10">
+              <DrumMotif className="h-full w-full text-accent-300" />
+            </div>
             <div className="relative">
-              <h2 className="text-2xl font-extrabold sm:text-3xl">
+              <h2 className="font-display text-2xl font-bold sm:text-3xl">
                 Sẵn sàng nộp hồ sơ?
               </h2>
               <p className="mt-2 max-w-xl text-brand-100">

@@ -14,7 +14,6 @@ export function StepsTimeline({ steps }: { steps: StepData[] }) {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Vạch tiến trình đổ dần theo cuộn
       gsap.fromTo(
         ".timeline-progress",
         { scaleY: 0 },
@@ -31,7 +30,6 @@ export function StepsTimeline({ steps }: { steps: StepData[] }) {
         },
       );
 
-      // Từng bước hiện lên khi cuộn tới
       gsap.utils.toArray<HTMLElement>(".step-item").forEach((el) => {
         gsap.from(el, {
           opacity: 0,
@@ -45,37 +43,40 @@ export function StepsTimeline({ steps }: { steps: StepData[] }) {
     return () => ctx.revert();
   }, [steps.length]);
 
+  const total = steps.length;
+
   return (
     <div ref={root} className="relative">
       <div className="timeline-track relative pl-12 sm:pl-16">
-        {/* Đường kẻ nền + vạch tiến trình */}
-        <div className="absolute bottom-4 left-[19px] top-4 w-0.5 bg-slate-200 sm:left-[27px]" />
-        <div className="timeline-progress absolute bottom-4 left-[19px] top-4 w-0.5 bg-gradient-to-b from-brand-500 to-accent-500 sm:left-[27px]" />
+        {/* Đường kẻ nền + vạch tiến trình đỏ→vàng */}
+        <div className="absolute bottom-4 left-[19px] top-4 w-0.5 bg-line sm:left-[27px]" />
+        <div className="timeline-progress absolute bottom-4 left-[19px] top-4 w-0.5 bg-gradient-to-b from-brand-600 via-brand-500 to-accent-500 sm:left-[27px]" />
 
         <div className="space-y-10">
           {steps.map((step, i) => (
             <div key={step.id} className="step-item relative">
-              {/* Nút số thứ tự */}
-              <span className="absolute -left-12 top-0 grid size-10 place-items-center rounded-full border-4 border-slate-50 bg-brand-600 text-sm font-bold text-white shadow-lg shadow-brand-600/30 sm:-left-16 sm:size-14 sm:text-base">
+              {/* Nút số thứ tự — con dấu đỏ vành vàng */}
+              <span className="absolute -left-12 top-1 grid size-10 place-items-center rounded-full border-4 border-cream bg-brand-600 font-display text-sm font-bold text-white shadow-lg shadow-brand-700/30 ring-1 ring-accent-500/60 sm:-left-16 sm:size-14 sm:text-base">
                 {i + 1}
               </span>
 
-              <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
-                <div className="border-b border-slate-100 px-5 py-4 sm:px-6">
-                  <p className="text-xs font-bold uppercase tracking-wider text-brand-600">
-                    Bước {i + 1}
+              <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm transition hover:shadow-md">
+                {/* đầu bài đỏ + huy hiệu vàng (giống khung video) */}
+                <div className="flex items-center gap-3 bg-gradient-to-r from-brand-700 to-brand-600 px-5 py-3 sm:px-6">
+                  <span className="grid shrink-0 place-items-center rounded-lg bg-accent-400 px-2 py-0.5 text-[11px] font-black text-brand-900 shadow ring-1 ring-white/30">
+                    {i + 1}/{total}
+                  </span>
+                  <p className="text-sm font-bold text-white">
+                    {step.title ? `Bước ${i + 1}: ${step.title}` : `Bước ${i + 1}`}
                   </p>
-                  {step.title && (
-                    <h3 className="mt-1 text-lg font-bold text-slate-900">
-                      {step.title}
-                    </h3>
-                  )}
-                  <p className="step-content mt-1.5 text-[15px] leading-relaxed text-slate-600">
+                </div>
+                <div className="px-5 py-4 sm:px-6">
+                  <p className="step-content text-[15px] leading-relaxed text-ink/75">
                     {step.content}
                   </p>
                 </div>
                 {step.imageUrl && (
-                  <div className="relative aspect-video w-full bg-slate-100">
+                  <div className="relative aspect-video w-full border-t border-line bg-parchment">
                     <Image
                       src={step.imageUrl}
                       alt={step.title || `Bước ${i + 1}`}
@@ -91,11 +92,11 @@ export function StepsTimeline({ steps }: { steps: StepData[] }) {
 
           {/* Nút hoàn tất */}
           <div className="step-item relative">
-            <span className="absolute -left-12 top-0 grid size-10 place-items-center rounded-full border-4 border-slate-50 bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 sm:-left-16 sm:size-14">
+            <span className="absolute -left-12 top-1 grid size-10 place-items-center rounded-full border-4 border-cream bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 sm:-left-16 sm:size-14">
               <Check className="size-5 sm:size-6" />
             </span>
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 sm:px-6">
-              <h3 className="font-bold text-emerald-800">Hoàn tất các bước</h3>
+              <h3 className="font-display font-semibold text-emerald-800">Hoàn tất các bước</h3>
               <p className="mt-1 text-sm text-emerald-700">
                 Xem video hướng dẫn bên dưới và bấm nút để nộp hồ sơ trực tuyến.
               </p>

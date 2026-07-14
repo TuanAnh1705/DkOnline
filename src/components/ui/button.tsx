@@ -6,16 +6,16 @@ type Variant = "primary" | "secondary" | "ghost" | "danger" | "accent";
 type Size = "sm" | "md" | "lg";
 
 const base =
-  "inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-500/25 disabled:opacity-60 disabled:pointer-events-none select-none";
+  "inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent-500/25 disabled:opacity-60 disabled:pointer-events-none select-none";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-brand-600 text-white shadow-lg shadow-brand-600/25 hover:bg-brand-700 hover:shadow-brand-700/30 active:scale-[.98]",
+    "bg-brand-600 text-white shadow-lg shadow-brand-700/25 ring-1 ring-inset ring-accent-400/40 hover:bg-brand-700 hover:shadow-brand-800/30 active:scale-[.98]",
   accent:
-    "bg-accent-500 text-white shadow-lg shadow-accent-500/25 hover:bg-accent-600 active:scale-[.98]",
+    "bg-accent-500 text-brand-900 shadow-lg shadow-accent-500/25 hover:bg-accent-400 active:scale-[.98]",
   secondary:
-    "bg-white text-slate-800 border border-slate-200 shadow-sm hover:bg-slate-50 hover:border-slate-300 active:scale-[.98]",
-  ghost: "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+    "bg-white text-ink border border-line shadow-sm hover:bg-brand-50 hover:border-brand-200 hover:text-brand-700 active:scale-[.98]",
+  ghost: "text-ink/70 hover:bg-brand-50 hover:text-brand-700",
   danger:
     "bg-rose-600 text-white shadow-lg shadow-rose-600/20 hover:bg-rose-700 active:scale-[.98]",
 };

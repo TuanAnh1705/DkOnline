@@ -1,14 +1,16 @@
 import { cn } from "@/lib/utils";
 
-/** Logo dạng toà nhà hành chính (mái + cột trụ) — nét trắng trên nền gradient. */
+/** Con dấu sơn son thếp vàng: nền đỏ sơn mài, vành vàng, nét vàng toà nhà hành chính. */
 export function LogoMark({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "grid place-items-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-white shadow-lg shadow-brand-600/30",
+        "relative grid place-items-center rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 shadow-lg shadow-brand-800/30 ring-1 ring-accent-500/50",
         className,
       )}
     >
+      {/* vành vàng mảnh bên trong */}
+      <span className="pointer-events-none absolute inset-[3px] rounded-[8px] border border-accent-400/45" />
       <svg
         viewBox="0 0 24 24"
         fill="none"
@@ -16,7 +18,7 @@ export function LogoMark({ className }: { className?: string }) {
         strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="size-[60%]"
+        className="relative size-[58%] text-accent-300"
         aria-hidden="true"
       >
         {/* mái tam giác */}

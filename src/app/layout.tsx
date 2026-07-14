@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
-import { Be_Vietnam_Pro } from "next/font/google";
+import { Be_Vietnam_Pro, Lora } from "next/font/google";
 import "./globals.css";
 
 const beVietnam = Be_Vietnam_Pro({
   subsets: ["latin", "vietnamese"],
   weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-be-vietnam",
+  display: "swap",
+});
+
+// Serif trang trọng cho tiêu đề (sơn son thếp vàng)
+const lora = Lora({
+  subsets: ["latin", "vietnamese"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-lora",
   display: "swap",
 });
 
@@ -22,7 +31,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="vi" className={`${beVietnam.variable} h-full antialiased`}>
+    <html
+      lang="vi"
+      className={`${beVietnam.variable} ${lora.variable} h-full antialiased`}
+    >
       <body className="min-h-full">{children}</body>
     </html>
   );
