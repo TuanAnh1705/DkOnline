@@ -20,9 +20,18 @@ import type { ProcedureCardData } from "@/types";
 export const revalidate = 120;
 
 const HOW_STEPS = [
-  { title: "Chọn thủ tục", desc: "Tìm đúng thủ tục bạn cần trong danh sách theo từng lĩnh vực." },
-  { title: "Xem hướng dẫn", desc: "Làm theo các bước bằng hình ảnh, mô tả và video trực quan." },
-  { title: "Nộp hồ sơ", desc: "Bấm nút để chuyển thẳng tới trang đăng ký hồ sơ trực tuyến." },
+  {
+    title: "Tra cứu thủ tục",
+    desc: "Xác định đúng thủ tục hành chính cần thực hiện theo lĩnh vực và cơ quan có thẩm quyền giải quyết nơi cư trú.",
+  },
+  {
+    title: "Nghiên cứu hướng dẫn",
+    desc: "Nắm trình tự thực hiện, thành phần hồ sơ và cách kê khai qua ảnh chụp màn hình thực tế kèm video minh họa.",
+  },
+  {
+    title: "Nộp hồ sơ trực tuyến",
+    desc: "Đăng nhập bằng tài khoản định danh điện tử VNeID, kê khai biểu mẫu, đính kèm giấy tờ và nhận mã hồ sơ để tra cứu tiến độ.",
+  },
 ];
 
 const PREP = [
@@ -125,7 +134,12 @@ export default async function HomePage() {
       {/* Cách sử dụng */}
       <section className="border-y border-line bg-white">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-          <SectionHeading center eyebrow="3 bước đơn giản" title="Làm theo là xong" />
+          <SectionHeading
+            center
+            eyebrow="Quy trình thực hiện"
+            title="Ba bước nộp hồ sơ trực tuyến"
+            desc="Trình tự áp dụng chung cho các thủ tục hành chính được cung cấp trực tuyến toàn trình trên Cổng Dịch vụ công Quốc gia."
+          />
           <StaggerGroup className="mt-12 grid gap-5 sm:grid-cols-3">
             {HOW_STEPS.map((s, i) => (
               <StaggerItem key={s.title}>

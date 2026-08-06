@@ -15,16 +15,75 @@ export interface ProcedureSpec {
   categorySlug?: string;
   categoryName?: string;
   dir: string;
-  video?: string;
+  imagesDir?: string; // thư mục con chứa ảnh (vd "annotated"); mặc định lấy ngay trong dir
+  video?: string; // tên file video, nằm trong dir
   registrationUrl?: string;
   order?: number;
   steps: StepSpec[];
 }
 
-// Link mở thủ tục trên Cổng DVC Quốc gia (route tìm kiếm hợp lệ + từ khoá)
-const search = (kw: string) =>
-  `https://dichvucong.gov.vn/tim-kiem-thu-tuc-hanh-chinh?keyword=${encodeURIComponent(kw)}`;
-const LIEN_THONG = "https://dichvucong.gov.vn/thu-tuc-hanh-chinh-lien-thong";
+// Link mở thủ tục trên Cổng DVC Quốc gia.
+// CHỈ dùng 2 route đã kiểm chứng là còn sống: trang tìm kiếm TTHC và trang DVC liên thông.
+// KHÔNG dùng route cũ `/p/home/dvc-chi-tiet-thu-tuc-hanh-chinh.html?ma_thu_tuc=...`
+// — đã thử và cổng báo trang không tồn tại.
+// `search(kw)` mở trang kết quả tìm kiếm; từ khoá lấy đúng chuỗi đã gõ trong ảnh hướng dẫn
+// nên thủ tục cần tìm nằm ngay đầu danh sách, bấm vào là ra trang chi tiết có khối
+// "Chọn cơ quan thực hiện" ở cột bên phải.
+// Bỏ mọi dấu câu (dấu phẩy…) và gộp khoảng trắng thừa, để URL sinh ra chỉ gồm
+// chữ + %20 đúng như link mẫu, không lẫn %2C.
+const search = (kw: string) => {
+  const clean = kw
+    .replace(/[^\p{L}\p{N} ]+/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+  return `https://dichvucong.gov.vn/tim-kiem-thu-tuc-hanh-chinh?keyword=${encodeURIComponent(clean)}`;
+};
+// Cổng riêng của dịch vụ công liên thông (không dùng route tìm kiếm như các thủ tục khác).
+const LIEN_THONG = "https://lienthong.dichvucong.gov.vn/#/ke-khai/2.000986";
+
+// Các bước đăng nhập đầu luồng lặp lại y hệt ở mọi thủ tục hộ tịch.
+const DANG_NHAP: StepSpec[] = [
+  {
+    title: "Truy cập Cổng Dịch vụ công",
+    content:
+      "Vào địa chỉ dichvucong.gov.vn và nhấn nút Đăng nhập ở góc trên bên phải màn hình.",
+  },
+  {
+    title: "Đăng nhập bằng VNeID",
+    content:
+      "Nhập số định danh cá nhân (số căn cước công dân) và mật khẩu tài khoản VNeID, sau đó nhấn Đăng nhập.",
+  },
+  {
+    title: "Nhập mã xác nhận",
+    content:
+      "Nhập mã xác nhận gồm 6 chữ số được gửi về điện thoại hoặc ứng dụng VNeID, rồi nhấn Xác nhận.",
+  },
+  {
+    title: "Xác nhận chia sẻ thông tin",
+    content:
+      "Tích chọn ô đồng ý và nhấn Xác nhận chia sẻ để cho phép đăng nhập vào Cổng Dịch vụ công Quốc gia.",
+  },
+  {
+    title: "Nhập passcode",
+    content:
+      "Nhập mã passcode 6 số của tài khoản định danh điện tử rồi nhấn Xác nhận để hoàn tất đăng nhập.",
+  },
+];
+
+// Bước chuyển từ Cổng DVCQG sang Hệ thống giải quyết TTHC ngành Tư pháp.
+const CHIA_SE_TU_PHAP: StepSpec[] = [
+  {
+    title: "Chia sẻ với hệ thống Tư pháp",
+    content:
+      "Tích chọn đồng ý và nhấn Xác nhận chia sẻ để đăng nhập Hệ thống giải quyết thủ tục hành chính Bộ Tư pháp.",
+  },
+  {
+    title: "Nhập passcode lần hai",
+    content:
+      "Nhập lại mã passcode 6 số của tài khoản định danh điện tử rồi nhấn Xác nhận.",
+  },
+];
 
 export const PROCEDURES: ProcedureSpec[] = [
   {
@@ -36,34 +95,24 @@ export const PROCEDURES: ProcedureSpec[] = [
     categorySlug: "ho-tich",
     categoryName: "Hộ tịch",
     dir: "D:/NopHsOnline/dkKetHon",
+    imagesDir: "annotated",
     video: "HuongDan_DangKyKetHon.mp4",
     registrationUrl: search("đăng ký kết hôn"),
     order: 1,
     steps: [
-      { title: "Truy cập Cổng Dịch vụ công", content: "Vào địa chỉ dichvucong.gov.vn và nhấn nút Đăng nhập ở góc trên bên phải màn hình." },
-      { title: "Đăng nhập bằng VNeID", content: "Nhập số định danh cá nhân (số căn cước công dân) và mật khẩu tài khoản VNeID, sau đó nhấn Đăng nhập." },
-      { title: "Nhập mã xác nhận", content: "Nhập mã OTP gồm 6 chữ số được gửi về điện thoại hoặc ứng dụng VNeID, rồi nhấn Xác nhận." },
-      { title: "Xác nhận chia sẻ thông tin", content: "Tích chọn ô đồng ý và nhấn Xác nhận chia sẻ để cho phép đăng nhập vào Cổng Dịch vụ công Quốc gia." },
-      { title: "Nhập passcode", content: "Nhập mã passcode 6 số của tài khoản định danh điện tử để hoàn tất xác thực." },
-      { title: "Tìm thủ tục đăng ký kết hôn", content: "Gõ từ khoá 'đăng ký kết hôn' vào ô tìm kiếm và chọn Thủ tục đăng ký kết hôn (mã 1.000894)." },
-      { title: "Chọn cơ quan thực hiện", content: "Chọn Tỉnh/Thành phố và Phường/Xã nơi cư trú ở khung bên phải, rồi nhấn Nộp hồ sơ." },
-      { title: "Nộp trực tuyến", content: "Kiểm tra cơ quan thực hiện, nhấn Nộp trực tuyến và nhấn Đồng ý để chuyển sang hệ thống ngành Tư pháp." },
-      { title: "Xác nhận thông tin chung", content: "Chọn cấp thực hiện, tỉnh thành, thủ tục, cơ quan và đơn vị tiếp nhận, sau đó nhấn Xác nhận." },
-      { title: "Bước 1 – Thông tin chủ hồ sơ", content: "Bổ sung ngày cấp, nơi cấp giấy tờ, số điện thoại, email và địa chỉ, rồi nhấn Bước tiếp theo." },
-      { title: "Bước 2 – Kê khai thông tin bên nữ", content: "Điền đầy đủ họ tên, ngày sinh, số định danh, giấy tờ tuỳ thân, nơi cư trú và tình trạng hôn nhân của bên nữ." },
-      { title: "Kê khai thông tin bên nam", content: "Điền thông tin bên nam tương tự, chọn loại đăng ký và số lượng bản sao mong muốn, rồi nhấn Xem trước." },
-      { title: "Xem tờ khai điện tử", content: "Kiểm tra lại toàn bộ thông tin trên tờ khai, có thể thực hiện Ký số, sau đó nhấn Xác nhận." },
-      { title: "Bước 3 – Thành phần hồ sơ", content: "Tờ khai được tạo tự động thành tệp PDF. Nhấn Chọn tệp đính kèm để tải lên các giấy tờ còn lại." },
-      { title: "Danh sách tài liệu điện tử", content: "Trong ví giấy tờ, nếu chưa có tài liệu, nhấn Tải lên từ thiết bị để thêm giấy tờ mới." },
-      { title: "Chọn cách tải lên", content: "Chọn Tải lên từ thiết bị với tệp có sẵn, hoặc Tạo tệp đính kèm từ nhiều hình ảnh để ghép nhiều ảnh thành một tệp PDF." },
-      { title: "Đặt tên & ký số tài liệu", content: "Đặt tên cho tài liệu, thực hiện Ký số cá nhân nếu cần, rồi nhấn Thêm vào ví và Chọn." },
-      { title: "Hoàn tất đính kèm hồ sơ", content: "Giấy tờ đã được đính kèm vào hồ sơ. Kiểm tra lại danh sách và nhấn Bước tiếp theo." },
-      { title: "Bước 4 – Nhận kết quả & lệ phí", content: "Chọn nơi và hình thức nhận kết quả. Kiểm tra phí, lệ phí rồi nhấn Thanh toán." },
-      { title: "Thanh toán trực tuyến", content: "Kiểm tra thông tin, tích đồng ý với điều khoản và nhấn Thanh toán & Nộp hồ sơ." },
-      { title: "Chọn phương thức thanh toán", content: "Tại Cổng thanh toán tập trung, chọn hình thức Thanh toán bằng mã QR." },
-      { title: "Chọn đơn vị thanh toán", content: "Chọn ngân hàng hoặc ví điện tử bạn dùng (VNPAY, MoMo, BIDV…) rồi nhấn Tiếp tục thanh toán." },
-      { title: "Quét mã QR thanh toán", content: "Mở ứng dụng ngân hàng, quét mã QR trên màn hình và xác nhận thanh toán khi mã còn hiệu lực." },
-      { title: "Nộp hồ sơ thành công", content: "Màn hình báo Thanh toán thành công nghĩa là hồ sơ đã được nộp. Chờ cơ quan xử lý và nhận kết quả theo lịch hẹn." },
+      ...DANG_NHAP,
+      { title: "Tìm thủ tục đăng ký kết hôn", content: "Gõ từ khoá 'đăng ký kết hôn' vào ô tìm kiếm và chọn Thủ tục đăng ký kết hôn (mã 1.000894) trong danh sách gợi ý." },
+      { title: "Chọn cơ quan thực hiện", content: "Ở trang chi tiết thủ tục, tại khối Chọn cơ quan thực hiện bên phải, chọn Tỉnh/Thành phố và Phường/Xã nơi cư trú, rồi nhấn Nộp hồ sơ." },
+      { title: "Nộp trực tuyến", content: "Ở trang Danh sách dịch vụ công, kiểm tra lại cơ quan thực hiện rồi nhấn Nộp trực tuyến (nếu đổi cơ quan thì nhấn Đồng ý ở cột bên phải)." },
+      ...CHIA_SE_TU_PHAP,
+      { title: "Xác nhận thông tin chung", content: "Kiểm tra Cấp thực hiện, Tỉnh thành, Thủ tục hành chính, Cơ quan thực hiện, Đơn vị tiếp nhận và Đối tượng thực hiện, rồi nhấn Xác nhận." },
+      { title: "Bước 1 – Thông tin chủ hồ sơ", content: "Thông tin định danh được điền sẵn. Bổ sung ngày cấp, nơi cấp giấy tờ, số điện thoại, email và địa chỉ chi tiết, rồi nhấn Bước tiếp theo." },
+      { title: "Bước 2 – Kê khai thông tin bên nữ", content: "Điền mẫu hộ tịch điện tử phần I: họ tên, ngày sinh, dân tộc, số định danh, giấy tờ tùy thân, nơi cư trú, kết hôn lần thứ mấy và tình trạng hôn nhân của bên nữ." },
+      { title: "Kê khai thông tin bên nam", content: "Điền tiếp phần II với thông tin của bên nam theo đúng các mục như bên nữ, sau đó nhấn Xem trước." },
+      { title: "Xem tờ khai điện tử", content: "Kiểm tra lại toàn bộ nội dung tờ khai vừa kê khai, có thể thực hiện Ký số, sau đó nhấn Xác nhận." },
+      { title: "Bước 3 – Thành phần hồ sơ", content: "Tờ khai được tạo tự động thành tệp Tờ khai.pdf. Nhấn Chọn tệp đính kèm để tải lên giấy tờ tùy thân và giấy tờ chứng minh nơi cư trú (nếu cần), rồi nhấn Bước tiếp theo." },
+      { title: "Bước 4 – Nhận kết quả & lệ phí", content: "Chọn hình thức nhận kết quả (bản giấy có đóng dấu, trực tuyến hoặc bưu chính công ích), nhập số lượng phiếu sao trích lục (40.000đ), rồi nhấn Gửi hồ sơ." },
+      { title: "Nộp hồ sơ thành công", content: "Màn hình báo Gửi hồ sơ thành công kèm mã hồ sơ. Ghi lại mã này và nhấn Hồ sơ của tôi để theo dõi tiến độ xử lý." },
     ],
   },
 
@@ -112,30 +161,29 @@ export const PROCEDURES: ProcedureSpec[] = [
     categorySlug: "ho-tich",
     categoryName: "Hộ tịch",
     dir: "D:/NopHsOnline/dkiLaiKhaiSinh",
+    imagesDir: "annotated",
     video: "HuongDan_DangKyLaiKhaiSinh.mp4",
     registrationUrl: search("đăng ký lại khai sinh"),
     order: 3,
     steps: [
-      { imgIndex: 16, title: "Tìm thủ tục đăng ký lại khai sinh", content: "Sau khi đăng nhập, gõ 'đăng ký lại khai sinh' vào ô tìm kiếm và chọn Thủ tục đăng ký lại khai sinh (mã 1.004884)." },
-      { imgIndex: 15, title: "Chọn cơ quan thực hiện", content: "Ở trang chi tiết thủ tục, chọn Tỉnh/Thành phố và Phường/Xã nơi cư trú, rồi nhấn Nộp hồ sơ." },
-      { imgIndex: 11, title: "Nộp trực tuyến", content: "Kiểm tra cơ quan thực hiện rồi nhấn Nộp trực tuyến, sau đó nhấn Đồng ý." },
-      { imgIndex: 9, title: "Xác nhận thông tin chung", content: "Chọn cấp thực hiện, tỉnh thành, thủ tục, cơ quan, đơn vị tiếp nhận và đối tượng thực hiện, rồi nhấn Xác nhận." },
-      { imgIndex: 5, title: "Bước 1 – Thông tin chủ hồ sơ", content: "Kiểm tra thông tin định danh đã điền sẵn của người yêu cầu." },
-      { imgIndex: 6, title: "Bổ sung thông tin liên hệ", content: "Nhập ngày cấp, nơi cấp giấy tờ, số điện thoại, email và địa chỉ chi tiết." },
-      { imgIndex: 10, title: "Kiểm tra và tiếp tục", content: "Xem lại thông tin, có thể tích lưu vào hồ sơ cá nhân cho lần sau, rồi nhấn Bước tiếp theo." },
-      { imgIndex: 3, title: "Xác nhận lưu thông tin", content: "Nhấn Đồng ý ở hộp thoại lưu dữ liệu vào hồ sơ cá nhân để tiếp tục." },
-      { imgIndex: 13, title: "Bước 2 – Kê khai thông tin", content: "Điền mẫu hộ tịch điện tử: thông tin người yêu cầu và người được đăng ký lại khai sinh." },
-      { imgIndex: 14, title: "Kê khai cha/mẹ & bản sao", content: "Điền thông tin cha, mẹ của người được khai sinh, chọn số lượng bản sao cần cấp, rồi nhấn Xem trước." },
-      { imgIndex: 12, title: "Xem tờ khai điện tử", content: "Kiểm tra lại nội dung tờ khai, có thể thực hiện Ký số, sau đó nhấn Xác nhận." },
-      { imgIndex: 18, title: "Bước 3 – Thành phần hồ sơ", content: "Tờ khai được tạo tự động thành tệp PDF. Nhấn Chọn tệp đính kèm để tải lên bản sao giấy khai sinh và giấy tờ liên quan." },
-      { imgIndex: 4, title: "Mở ví tài liệu điện tử", content: "Trong Danh sách tài liệu điện tử, nhấn Tải lên từ thiết bị để thêm giấy tờ." },
-      { imgIndex: 1, title: "Chọn cách tải lên", content: "Chọn Tải lên từ thiết bị với tệp có sẵn, hoặc Tạo tệp đính kèm từ nhiều hình ảnh." },
-      { imgIndex: 2, title: "Đặt tên & ký số tài liệu", content: "Đặt tên cho tài liệu, thực hiện Ký số cá nhân nếu cần, rồi nhấn Thêm vào ví và Chọn." },
-      { imgIndex: 19, title: "Hoàn tất đính kèm", content: "Giấy tờ đã được đính kèm vào đúng thành phần hồ sơ." },
-      { imgIndex: 17, title: "Kiểm tra hồ sơ & tiếp tục", content: "Kiểm tra lại danh sách thành phần hồ sơ, ghi chú nếu cần rồi nhấn Bước tiếp theo." },
-      { imgIndex: 7, title: "Bước 4 – Nhận kết quả & lệ phí", content: "Chọn nơi và hình thức nhận kết quả. Kiểm tra phí (ví dụ 40.000đ cho bản sao) rồi nhấn Thanh toán." },
-      { imgIndex: 8, title: "Thanh toán trực tuyến", content: "Kiểm tra thông tin, tích đồng ý điều khoản và nhấn Thanh toán & Nộp hồ sơ." },
-      { imgIndex: 20, title: "Quét mã QR thanh toán", content: "Tại Cổng thanh toán tập trung, quét mã QR bằng ứng dụng ngân hàng để thanh toán và hoàn tất nộp hồ sơ." },
+      ...DANG_NHAP,
+      { title: "Tìm thủ tục đăng ký lại khai sinh", content: "Gõ 'đăng ký lại khai sinh' vào ô tìm kiếm và chọn Thủ tục đăng ký lại khai sinh (mã 1.004884) trong danh sách gợi ý." },
+      { title: "Chọn cơ quan thực hiện", content: "Ở trang chi tiết thủ tục, tại khối Chọn cơ quan thực hiện bên phải, chọn Tỉnh/Thành phố và Phường/Xã nơi cư trú, rồi nhấn Nộp hồ sơ." },
+      { title: "Nộp trực tuyến", content: "Ở trang Danh sách dịch vụ công, kiểm tra lại cơ quan thực hiện rồi nhấn Nộp trực tuyến (nếu đổi cơ quan thì nhấn Đồng ý ở cột bên phải)." },
+      ...CHIA_SE_TU_PHAP,
+      { title: "Xác nhận thông tin chung", content: "Kiểm tra Cấp thực hiện, Tỉnh thành, Thủ tục hành chính, Cơ quan thực hiện, Đơn vị tiếp nhận và Đối tượng thực hiện, rồi nhấn Xác nhận." },
+      { title: "Bước 1 – Thông tin chủ hồ sơ", content: "Bổ sung ngày cấp, nơi cấp giấy tờ, số điện thoại, email và địa chỉ chi tiết của người yêu cầu, rồi nhấn Bước tiếp theo." },
+      { title: "Xác nhận lưu thông tin", content: "Nhấn Đồng ý ở hộp thoại Lưu dữ liệu vào hồ sơ cá nhân để lần sau không phải nhập lại." },
+      { title: "Bước 2 – Kê khai người yêu cầu", content: "Điền mẫu hộ tịch điện tử phần I và II: thông tin người yêu cầu, quan hệ với người được khai sinh, loại đăng ký (Đăng ký lại) và cơ quan đăng ký hộ tịch trước đây." },
+      { title: "Kê khai cha, mẹ & số bản sao", content: "Điền tiếp thông tin người mẹ (phần III) và người cha (phần IV), tích Đề nghị cấp bản sao và nhập số lượng, rồi nhấn Xem trước." },
+      { title: "Xem tờ khai điện tử", content: "Kiểm tra lại toàn bộ nội dung tờ khai, có thể thực hiện Ký số, sau đó nhấn Xác nhận." },
+      { title: "Bước 3 – Thành phần hồ sơ", content: "Tờ khai được tạo tự động thành tệp Tờ khai.pdf. Nhấn Chọn tệp đính kèm ở dòng giấy tờ tương ứng để tải bản sao Giấy khai sinh hoặc giấy tờ thay thế." },
+      { title: "Mở ví tài liệu điện tử", content: "Trong Danh sách tài liệu điện tử, nhấn Tải lên từ thiết bị để thêm giấy tờ mới vào ví." },
+      { title: "Chọn cách tải lên", content: "Chọn Tải lên từ thiết bị nếu đã có sẵn tệp, hoặc Tạo tệp đính kèm từ nhiều hình ảnh để ghép nhiều ảnh chụp thành một tệp PDF." },
+      { title: "Đặt tên & ký số tài liệu", content: "Đặt tên cho tài liệu, thực hiện Ký số cá nhân nếu cần, rồi nhấn Thêm vào ví & Chọn." },
+      { title: "Hoàn tất đính kèm hồ sơ", content: "Giấy tờ đã được đính kèm vào đúng thành phần hồ sơ. Kiểm tra lại danh sách rồi nhấn Bước tiếp theo." },
+      { title: "Bước 4 – Nhận kết quả & lệ phí", content: "Chọn hình thức nhận kết quả, nhập số lượng phiếu sao trích lục (40.000đ), rồi nhấn Gửi hồ sơ." },
+      { title: "Nộp hồ sơ thành công", content: "Màn hình báo Gửi hồ sơ thành công kèm mã hồ sơ. Ghi lại mã này và nhấn Hồ sơ của tôi để theo dõi tiến độ xử lý." },
     ],
   },
 
@@ -148,36 +196,27 @@ export const PROCEDURES: ProcedureSpec[] = [
     categorySlug: "ho-tich",
     categoryName: "Hộ tịch",
     dir: "D:/NopHsOnline/dkKhaiTu",
+    imagesDir: "annotated",
     video: "HuongDan_DangKyKhaiTu.mp4",
     registrationUrl: search("đăng ký khai tử"),
     order: 4,
     steps: [
-      { imgIndex: 24, title: "Tìm thủ tục đăng ký khai tử", content: "Sau khi đăng nhập, gõ 'đăng ký khai tử' vào ô tìm kiếm và chọn Thủ tục đăng ký khai tử (mã 1.000656)." },
-      { imgIndex: 22, title: "Chọn cơ quan thực hiện", content: "Ở trang chi tiết thủ tục, chọn Tỉnh/Thành phố và Phường/Xã nơi cư trú, rồi nhấn Nộp hồ sơ." },
-      { imgIndex: 15, title: "Nộp trực tuyến", content: "Kiểm tra cơ quan thực hiện rồi nhấn Nộp trực tuyến, sau đó nhấn Đồng ý." },
-      { imgIndex: 14, title: "Nhập mã xác nhận đăng nhập", content: "Khi chuyển sang hệ thống Tư pháp, nhập mã OTP gửi về điện thoại hoặc ứng dụng VNeID rồi nhấn Xác nhận." },
-      { imgIndex: 7, title: "Nhập passcode", content: "Nhập mã passcode 6 số của tài khoản định danh điện tử để xác thực." },
-      { imgIndex: 18, title: "Xác nhận chia sẻ thông tin", content: "Tích chọn đồng ý để chia sẻ thông tin với Hệ thống giải quyết thủ tục hành chính Bộ Tư pháp." },
-      { imgIndex: 20, title: "Đồng ý chia sẻ để tiếp tục", content: "Nhấn Xác nhận chia sẻ để hoàn tất đăng nhập vào hệ thống Tư pháp." },
-      { imgIndex: 12, title: "Xác nhận thông tin chung", content: "Chọn cấp thực hiện, tỉnh thành, thủ tục, cơ quan, đơn vị tiếp nhận và đối tượng thực hiện, rồi nhấn Xác nhận." },
-      { imgIndex: 2, title: "Bước 1 – Thông tin chủ hồ sơ", content: "Kiểm tra thông tin định danh của người đi đăng ký khai tử (người yêu cầu)." },
-      { imgIndex: 11, title: "Bổ sung thông tin liên hệ", content: "Nhập ngày cấp, nơi cấp giấy tờ, số điện thoại, email và địa chỉ chi tiết." },
-      { imgIndex: 13, title: "Kiểm tra và tiếp tục", content: "Xem lại thông tin, có thể tích lưu vào hồ sơ cá nhân cho lần sau, rồi nhấn Bước tiếp theo." },
-      { imgIndex: 5, title: "Xác nhận lưu thông tin", content: "Nhấn Đồng ý ở hộp thoại lưu dữ liệu vào hồ sơ cá nhân để tiếp tục." },
-      { imgIndex: 17, title: "Bước 2 – Kê khai người yêu cầu", content: "Điền mẫu hộ tịch điện tử: thông tin người yêu cầu và quan hệ với người đã mất." },
-      { imgIndex: 25, title: "Kê khai thông tin người chết", content: "Điền nguyên nhân chết, giấy báo tử và số lượng bản sao cần cấp, rồi nhấn Xem trước." },
-      { imgIndex: 16, title: "Xem tờ khai điện tử", content: "Kiểm tra lại nội dung tờ khai, có thể thực hiện Ký số, sau đó nhấn Xác nhận." },
-      { imgIndex: 26, title: "Bước 3 – Thành phần hồ sơ", content: "Tờ khai được tạo tự động thành tệp PDF. Nhấn Chọn tệp đính kèm để tải lên giấy báo tử và giấy tờ liên quan." },
-      { imgIndex: 3, title: "Mở ví tài liệu điện tử", content: "Trong Danh sách tài liệu điện tử, nhấn Tải lên từ thiết bị để thêm giấy tờ." },
-      { imgIndex: 1, title: "Chọn cách tải lên", content: "Chọn Tải lên từ thiết bị với tệp có sẵn, hoặc Tạo tệp đính kèm từ nhiều hình ảnh." },
-      { imgIndex: 4, title: "Đặt tên & ký số tài liệu", content: "Đặt tên cho tài liệu, thực hiện Ký số cá nhân nếu cần, rồi nhấn Thêm vào ví và Chọn." },
-      { imgIndex: 23, title: "Hoàn tất đính kèm", content: "Giấy tờ đã được đính kèm vào đúng thành phần hồ sơ. Kiểm tra lại rồi nhấn Bước tiếp theo." },
-      { imgIndex: 9, title: "Bước 4 – Nhận kết quả & lệ phí", content: "Chọn nơi và hình thức nhận kết quả. Kiểm tra phí (ví dụ 40.000đ cho bản sao) rồi nhấn Thanh toán." },
-      { imgIndex: 8, title: "Thanh toán trực tuyến", content: "Kiểm tra thông tin, tích đồng ý điều khoản và nhấn Thanh toán & Nộp hồ sơ." },
-      { imgIndex: 10, title: "Chọn phương thức thanh toán", content: "Tại Cổng thanh toán tập trung, chọn hình thức Thanh toán bằng mã QR." },
-      { imgIndex: 19, title: "Chọn đơn vị thanh toán", content: "Chọn ngân hàng hoặc ví điện tử bạn dùng (VNPAY, MoMo, BIDV…) rồi nhấn Tiếp tục thanh toán." },
-      { imgIndex: 21, title: "Quét mã QR thanh toán", content: "Mở ứng dụng ngân hàng, quét mã QR trên màn hình và xác nhận thanh toán khi mã còn hiệu lực." },
-      { imgIndex: 6, title: "Nộp hồ sơ thành công", content: "Màn hình báo Thanh toán và gửi hồ sơ thành công nghĩa là hồ sơ đã được nộp. Chờ cơ quan xử lý và nhận kết quả." },
+      { title: "Truy cập Cổng Dịch vụ công", content: "Vào địa chỉ dichvucong.gov.vn và nhấn nút Đăng nhập ở góc trên bên phải màn hình." },
+      { title: "Nhập mã xác nhận đăng nhập", content: "Sau khi nhập số định danh và mật khẩu VNeID, nhập mã xác nhận 6 chữ số gửi về điện thoại hoặc ứng dụng VNeID rồi nhấn Xác nhận." },
+      { title: "Xác nhận chia sẻ thông tin", content: "Tích chọn ô đồng ý và nhấn Xác nhận chia sẻ để cho phép đăng nhập vào Cổng Dịch vụ công Quốc gia." },
+      { title: "Nhập passcode", content: "Nhập mã passcode 6 số của tài khoản định danh điện tử rồi nhấn Xác nhận để hoàn tất đăng nhập." },
+      { title: "Tìm thủ tục đăng ký khai tử", content: "Gõ 'đăng ký khai tử' vào ô tìm kiếm và chọn đúng mục Thủ tục đăng ký khai tử (mã 1.000656) — lưu ý không chọn nhầm các thủ tục khai tử có yếu tố nước ngoài hoặc đăng ký lại khai tử." },
+      { title: "Nộp trực tuyến", content: "Ở trang Danh sách dịch vụ công, chọn Tỉnh/Thành phố và Phường/Xã ở khối bên phải rồi nhấn Nộp trực tuyến (hoặc nhấn Đồng ý sau khi đổi cơ quan)." },
+      ...CHIA_SE_TU_PHAP,
+      { title: "Xác nhận thông tin chung", content: "Kiểm tra Cấp thực hiện, Tỉnh thành, Thủ tục hành chính, Cơ quan thực hiện, Đơn vị tiếp nhận; chọn Đối tượng thực hiện là Làm thủ tục cho người khác, rồi nhấn Xác nhận." },
+      { title: "Bước 2 – Kê khai người yêu cầu", content: "Điền mẫu hộ tịch điện tử phần I: thông tin người đi đăng ký khai tử, nơi cư trú và quan hệ với người được khai tử (con, cháu nội…). Phần II khai thông tin người chết và loại đăng ký." },
+      { title: "Kê khai nguyên nhân chết & bản sao", content: "Điền nơi cư trú cuối cùng, ngày chết, nơi chết, nguyên nhân chết, giấy báo tử; tích Đề nghị cấp bản sao và nhập số lượng, rồi nhấn Xem trước." },
+      { title: "Xem tờ khai điện tử", content: "Kiểm tra lại toàn bộ nội dung tờ khai, có thể thực hiện Ký số, sau đó nhấn Xác nhận." },
+      { title: "Bước 3 – Thành phần hồ sơ", content: "Tờ khai được tạo tự động thành tệp Tờ khai.pdf. Nhấn Chọn tệp đính kèm để tải lên Giấy báo tử hoặc giấy tờ chứng minh sự kiện chết." },
+      { title: "Đặt tên & ký số tài liệu", content: "Đặt tên cho tài liệu vừa chọn, thực hiện Ký số cá nhân nếu cần, rồi nhấn Thêm vào ví & Chọn." },
+      { title: "Hoàn tất đính kèm hồ sơ", content: "Giấy tờ đã được đính kèm vào đúng thành phần hồ sơ. Kiểm tra lại danh sách, ghi chú nếu cần rồi nhấn Bước tiếp theo." },
+      { title: "Bước 4 – Nhận kết quả & lệ phí", content: "Chọn nơi và hình thức nhận kết quả, nhập số lượng phiếu sao trích lục (40.000đ), rồi nhấn Gửi hồ sơ." },
+      { title: "Nộp hồ sơ thành công", content: "Màn hình báo Gửi hồ sơ thành công kèm mã hồ sơ. Ghi lại mã này và nhấn Hồ sơ của tôi để theo dõi tiến độ xử lý." },
     ],
   },
 
@@ -190,34 +229,28 @@ export const PROCEDURES: ProcedureSpec[] = [
     categorySlug: "ho-tich",
     categoryName: "Hộ tịch",
     dir: "D:/NopHsOnline/xnTinhTrangHonNhan",
+    imagesDir: "annotated",
     video: "HuongDan_CapGiayXacNhanTinhTrangHonNhan.mp4",
     registrationUrl: search("xác nhận tình trạng hôn nhân"),
     order: 5,
     steps: [
-      { imgIndex: 22, title: "Truy cập Cổng Dịch vụ công", content: "Vào dichvucong.gov.vn và nhấn nút Đăng nhập ở góc trên bên phải." },
-      { imgIndex: 10, title: "Đăng nhập VNeID", content: "Nhập số định danh cá nhân và mật khẩu tài khoản VNeID, rồi nhấn Đăng nhập." },
-      { imgIndex: 14, title: "Xác nhận chia sẻ thông tin", content: "Tích chọn đồng ý và nhấn Xác nhận chia sẻ để đăng nhập vào Cổng Dịch vụ công Quốc gia." },
-      { imgIndex: 24, title: "Vào trang chủ", content: "Sau khi đăng nhập thành công, bạn quay lại trang chủ để tìm thủ tục cần làm." },
-      { imgIndex: 20, title: "Tìm thủ tục", content: "Gõ 'xác nhận tình trạng hôn nhân' vào ô tìm kiếm và chọn Thủ tục cấp Giấy xác nhận tình trạng hôn nhân (mã 1.004873)." },
-      { imgIndex: 19, title: "Chọn cơ quan thực hiện", content: "Ở trang chi tiết thủ tục, chọn Tỉnh/Thành phố và Phường/Xã nơi cư trú, rồi nhấn Nộp hồ sơ." },
-      { imgIndex: 13, title: "Nộp trực tuyến", content: "Kiểm tra cơ quan thực hiện rồi nhấn Nộp trực tuyến, sau đó nhấn Đồng ý." },
-      { imgIndex: 8, title: "Nhập mã xác nhận đăng nhập", content: "Khi chuyển sang hệ thống Tư pháp, nhập mã OTP gửi về điện thoại hoặc ứng dụng VNeID rồi nhấn Xác nhận." },
-      { imgIndex: 12, title: "Chia sẻ với hệ thống Tư pháp", content: "Nhấn Xác nhận chia sẻ để đăng nhập Hệ thống giải quyết thủ tục hành chính Bộ Tư pháp." },
-      { imgIndex: 7, title: "Xác nhận thông tin chung", content: "Chọn cấp thực hiện, tỉnh thành, thủ tục, cơ quan, đơn vị tiếp nhận và đối tượng thực hiện, rồi nhấn Xác nhận." },
-      { imgIndex: 11, title: "Bước 1 – Thông tin chủ hồ sơ", content: "Kiểm tra thông tin định danh đã điền sẵn của người yêu cầu." },
-      { imgIndex: 9, title: "Bổ sung thông tin & tiếp tục", content: "Nhập ngày cấp, nơi cấp giấy tờ, số điện thoại, email, địa chỉ; có thể tích lưu vào hồ sơ cá nhân rồi nhấn Bước tiếp theo." },
-      { imgIndex: 3, title: "Xác nhận lưu thông tin", content: "Nhấn Đồng ý ở hộp thoại lưu dữ liệu vào hồ sơ cá nhân để tiếp tục." },
-      { imgIndex: 15, title: "Bước 2 – Kê khai người yêu cầu", content: "Điền mẫu điện tử tương tác: thông tin người yêu cầu cấp giấy xác nhận tình trạng hôn nhân." },
-      { imgIndex: 17, title: "Kê khai người được cấp", content: "Điền thông tin người được cấp giấy và tình trạng hôn nhân, rồi nhấn Xem trước." },
-      { imgIndex: 16, title: "Xem tờ khai điện tử", content: "Kiểm tra lại nội dung tờ khai, có thể thực hiện Ký số, sau đó nhấn Xác nhận." },
-      { imgIndex: 21, title: "Bước 3 – Thành phần hồ sơ", content: "Tờ khai được tạo tự động thành tệp PDF. Nhấn Chọn tệp đính kèm để tải lên giấy tờ liên quan (nếu có)." },
-      { imgIndex: 1, title: "Mở ví tài liệu điện tử", content: "Trong Danh sách tài liệu điện tử, nhấn Tải lên từ thiết bị để thêm giấy tờ." },
-      { imgIndex: 2, title: "Chọn cách tải lên", content: "Chọn Tải lên từ thiết bị với tệp có sẵn, hoặc Tạo tệp đính kèm từ nhiều hình ảnh." },
-      { imgIndex: 4, title: "Đặt tên & ký số tài liệu", content: "Đặt tên cho tài liệu, thực hiện Ký số cá nhân nếu cần, rồi nhấn Thêm vào ví và Chọn." },
-      { imgIndex: 18, title: "Hoàn tất đính kèm", content: "Giấy tờ đã được đính kèm vào đúng thành phần hồ sơ." },
-      { imgIndex: 23, title: "Kiểm tra hồ sơ & tiếp tục", content: "Kiểm tra lại danh sách thành phần hồ sơ, ghi chú nếu cần rồi nhấn Bước tiếp theo." },
-      { imgIndex: 5, title: "Bước 4 – Nhận kết quả (miễn phí)", content: "Chọn nơi và hình thức nhận kết quả. Thủ tục này miễn phí (0đ). Nhấn Gửi hồ sơ." },
-      { imgIndex: 6, title: "Nộp hồ sơ thành công", content: "Màn hình báo Gửi hồ sơ thành công nghĩa là hồ sơ đã được nộp. Chờ cơ quan xử lý và nhận kết quả theo lịch hẹn." },
+      ...DANG_NHAP,
+      { title: "Tìm thủ tục", content: "Gõ 'xác nhận tình trạng hôn nhân' vào ô tìm kiếm và chọn Thủ tục cấp Giấy xác nhận tình trạng hôn nhân (mã 1.004873)." },
+      { title: "Chọn cơ quan thực hiện", content: "Ở trang chi tiết thủ tục, tại khối Chọn cơ quan thực hiện bên phải, chọn Tỉnh/Thành phố và Phường/Xã nơi cư trú, rồi nhấn Nộp hồ sơ." },
+      { title: "Nộp trực tuyến", content: "Ở trang Danh sách dịch vụ công, kiểm tra lại cơ quan thực hiện rồi nhấn Nộp trực tuyến (nếu đổi cơ quan thì nhấn Đồng ý ở cột bên phải)." },
+      ...CHIA_SE_TU_PHAP,
+      { title: "Xác nhận thông tin chung", content: "Kiểm tra Cấp thực hiện, Tỉnh thành, Thủ tục hành chính, Cơ quan thực hiện, Đơn vị tiếp nhận và Đối tượng thực hiện, rồi nhấn Xác nhận." },
+      { title: "Bước 1 – Thông tin chủ hồ sơ", content: "Thông tin định danh được điền sẵn. Bổ sung ngày cấp, nơi cấp giấy tờ, số điện thoại, email và địa chỉ chi tiết." },
+      { title: "Xác nhận lưu thông tin", content: "Nhấn Đồng ý ở hộp thoại Lưu dữ liệu vào hồ sơ cá nhân để lần sau không phải nhập lại." },
+      { title: "Kiểm tra & tiếp tục", content: "Xem lại toàn bộ thông tin chủ hồ sơ một lần nữa rồi nhấn Bước tiếp theo." },
+      { title: "Bước 2 – Kê khai người yêu cầu", content: "Điền mẫu điện tử tương tác phần I: họ tên, ngày sinh, số định danh, giấy tờ tùy thân, nơi cư trú và quan hệ với người được cấp giấy." },
+      { title: "Kê khai người được cấp giấy", content: "Điền tiếp phần II: loại đăng ký, họ tên, ngày sinh, giới tính, dân tộc, quốc tịch và giấy tờ tùy thân của người được cấp giấy, rồi nhấn Xem trước." },
+      { title: "Xem tờ khai điện tử", content: "Kiểm tra lại toàn bộ nội dung tờ khai, có thể thực hiện Ký số, sau đó nhấn Xác nhận." },
+      { title: "Bước 3 – Thành phần hồ sơ", content: "Tờ khai được tạo tự động thành tệp Tờ khai.pdf. Nhấn Chọn tệp đính kèm ở dòng tương ứng để tải lên giấy tờ chứng minh (nếu thuộc trường hợp phải nộp)." },
+      { title: "Mở ví tài liệu điện tử", content: "Trong Danh sách tài liệu điện tử, nhấn Tải lên từ thiết bị để thêm giấy tờ mới vào ví." },
+      { title: "Hoàn tất đính kèm hồ sơ", content: "Giấy tờ đã được đính kèm vào đúng thành phần hồ sơ. Kiểm tra lại danh sách rồi nhấn Bước tiếp theo." },
+      { title: "Bước 4 – Nhận kết quả (miễn phí)", content: "Chọn hình thức nhận kết quả và số lượng phiếu sao trích lục. Thủ tục này miễn phí, tổng số tiền cần thanh toán là 0đ — nhấn Gửi hồ sơ." },
+      { title: "Nộp hồ sơ thành công", content: "Màn hình báo Gửi hồ sơ thành công kèm mã hồ sơ. Ghi lại mã này và nhấn Hồ sơ của tôi để theo dõi tiến độ xử lý." },
     ],
   },
 
@@ -227,8 +260,8 @@ export const PROCEDURES: ProcedureSpec[] = [
     title: "Liên thông: Khai sinh – Thường trú – Cấp thẻ BHYT cho trẻ dưới 6 tuổi",
     summary:
       "Hướng dẫn nộp hồ sơ dịch vụ công liên thông: đăng ký khai sinh, đăng ký thường trú và cấp thẻ bảo hiểm y tế cho trẻ em dưới 6 tuổi.",
-    categorySlug: "bao-hiem-y-te",
-    categoryName: "Bảo hiểm y tế",
+    categorySlug: "ho-tich",
+    categoryName: "Hộ tịch",
     dir: "D:/NopHsOnline/lienThongKhaiSinh,CapLaiBHYTDuoi6Tuoi",
     video: "HuongDan_LienThongKhaiSinh_BHYT.mp4",
     registrationUrl: LIEN_THONG,
@@ -245,6 +278,70 @@ export const PROCEDURES: ProcedureSpec[] = [
       { imgIndex: 11, title: "Bước 4 – Đính kèm hồ sơ", content: "Đính kèm bản chụp giấy chứng sinh và tờ khai thay đổi thông tin cư trú (CT01), rồi nhấn Chuyển bước tiếp theo." },
       { imgIndex: 3, title: "Bước 5 – Chọn hình thức nhận kết quả", content: "Chọn hình thức nhận kết quả khai sinh, thường trú và thẻ BHYT, nhập mã kiểm tra rồi nhấn Hoàn thành." },
       { imgIndex: 10, title: "Bước 6 – Hoàn thành", content: "Màn hình báo Kê khai thông tin thành công và hiển thị số hồ sơ. Ghi lại số hồ sơ và ngày hẹn trả để theo dõi kết quả." },
+    ],
+  },
+
+  {
+    key: "dkiNhanChaMeCon",
+    slug: "dang-ky-nhan-cha-me-con",
+    title: "Đăng ký nhận cha, mẹ, con",
+    summary:
+      "Hướng dẫn nộp hồ sơ đăng ký nhận cha, mẹ, con trực tuyến trên Cổng Dịch vụ công Quốc gia (thủ tục miễn phí), từng bước bằng hình ảnh và video.",
+    categorySlug: "ho-tich",
+    categoryName: "Hộ tịch",
+    dir: "D:/NopHsOnline/dkiNhanChaMeCon",
+    imagesDir: "annotated",
+    video: "HuongDan_DangKyNhanChaMeCon.mp4",
+    registrationUrl: search("đăng ký nhận cha mẹ con"),
+    order: 7,
+    steps: [
+      ...DANG_NHAP,
+      { title: "Tìm thủ tục đăng ký nhận cha, mẹ, con", content: "Gõ 'đăng ký nhận cha, mẹ, con' vào ô tìm kiếm và chọn đúng mục Thủ tục đăng ký nhận cha, mẹ, con (mã 1.001022) — không chọn nhầm thủ tục kết hợp đăng ký khai sinh hoặc có yếu tố nước ngoài." },
+      { title: "Chọn cơ quan thực hiện", content: "Ở trang chi tiết thủ tục, tại khối Chọn cơ quan thực hiện bên phải, chọn Tỉnh/Thành phố và Phường/Xã nơi cư trú, rồi nhấn Nộp hồ sơ." },
+      { title: "Nộp trực tuyến", content: "Ở trang Danh sách dịch vụ công, kiểm tra lại cơ quan thực hiện rồi nhấn Nộp trực tuyến (nếu đổi cơ quan thì nhấn Đồng ý ở cột bên phải)." },
+      ...CHIA_SE_TU_PHAP,
+      { title: "Xác nhận thông tin chung", content: "Kiểm tra Cấp thực hiện, Tỉnh thành, Thủ tục hành chính, Cơ quan thực hiện, Đơn vị tiếp nhận và Đối tượng thực hiện, rồi nhấn Xác nhận." },
+      { title: "Bước 1 – Thông tin chủ hồ sơ", content: "Thông tin định danh được điền sẵn. Bổ sung ngày cấp, nơi cấp giấy tờ, số điện thoại, email và địa chỉ chi tiết, rồi nhấn Bước tiếp theo." },
+      { title: "Bước 2 – Kê khai người yêu cầu", content: "Điền mẫu hộ tịch điện tử phần I: họ tên, số định danh, giấy tờ tùy thân, nơi cư trú, số điện thoại; tích quan hệ với người được nhận (Cha/Mẹ/Con), chọn Loại đăng ký và Loại xác nhận (ví dụ Cha nhận con)." },
+      { title: "Kê khai thông tin cha/mẹ", content: "Điền tiếp phần II: họ tên, ngày sinh, giới tính, dân tộc, quốc tịch, số định danh, giấy tờ tùy thân và nơi cư trú của người cha/mẹ, rồi nhấn Xem trước." },
+      { title: "Xem tờ khai điện tử", content: "Kiểm tra lại toàn bộ nội dung tờ khai, có thể thực hiện Ký số, sau đó nhấn Xác nhận." },
+      { title: "Bước 3 – Thành phần hồ sơ", content: "Tờ khai được tạo tự động thành tệp Tờ khai.pdf. Nhấn Chọn tệp đính kèm để tải lên văn bản của cơ quan y tế/giám định xác nhận quan hệ cha con, mẹ con (ví dụ kết quả ADN)." },
+      { title: "Mở ví tài liệu điện tử", content: "Trong Danh sách tài liệu điện tử, nhấn Tải lên từ thiết bị để thêm giấy tờ mới vào ví." },
+      { title: "Chọn cách tải lên", content: "Chọn Tải lên từ thiết bị nếu đã có sẵn tệp, hoặc Tạo tệp đính kèm từ nhiều hình ảnh để ghép nhiều ảnh chụp thành một tệp PDF." },
+      { title: "Đặt tên & ký số tài liệu", content: "Đặt tên cho tài liệu (ví dụ ADN), thực hiện Ký số cá nhân nếu cần, rồi nhấn Thêm vào ví & Chọn." },
+      { title: "Hoàn tất đính kèm hồ sơ", content: "Giấy tờ đã được đính kèm vào đúng thành phần hồ sơ. Kiểm tra lại danh sách rồi nhấn Bước tiếp theo." },
+      { title: "Bước 4 – Nhận kết quả (miễn phí)", content: "Chọn hình thức nhận kết quả và số lượng phiếu sao trích lục. Thủ tục này miễn phí, tổng số tiền cần thanh toán là 0đ — nhấn Gửi hồ sơ." },
+      { title: "Nộp hồ sơ thành công", content: "Màn hình báo Gửi hồ sơ thành công kèm mã hồ sơ. Ghi lại mã này và nhấn Hồ sơ của tôi để theo dõi tiến độ xử lý." },
+    ],
+  },
+
+  {
+    key: "capBsTrichLuc",
+    slug: "cap-ban-sao-trich-luc-ho-tich",
+    title: "Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh",
+    summary:
+      "Hướng dẫn xin cấp bản sao Trích lục hộ tịch / bản sao Giấy khai sinh trực tuyến trên Cổng Dịch vụ công Quốc gia, từng bước bằng hình ảnh và video.",
+    categorySlug: "ho-tich",
+    categoryName: "Hộ tịch",
+    dir: "D:/NopHsOnline/capBsTrichLucHoTichBsGKS",
+    imagesDir: "annotated",
+    video: "HuongDan_CapBanSaoTrichLucHoTich.mp4",
+    registrationUrl: search("cấp bản sao trích lục hộ tịch"),
+    order: 8,
+    steps: [
+      ...DANG_NHAP,
+      { title: "Tìm thủ tục cấp bản sao trích lục", content: "Gõ 'cấp bản sao trích lục' vào ô tìm kiếm và chọn Cấp bản sao Trích lục hộ tịch, bản sao Giấy khai sinh (mã 2.000635)." },
+      { title: "Chọn cơ quan thực hiện", content: "Ở trang chi tiết thủ tục, tại khối Chọn cơ quan thực hiện bên phải, chọn Tỉnh/Thành phố và Phường/Xã nơi cư trú, rồi nhấn Nộp hồ sơ." },
+      { title: "Nộp trực tuyến", content: "Ở trang Danh sách dịch vụ công, kiểm tra lại cơ quan thực hiện rồi nhấn Nộp trực tuyến (nếu đổi cơ quan thì nhấn Đồng ý ở cột bên phải)." },
+      ...CHIA_SE_TU_PHAP,
+      { title: "Xác nhận thông tin chung", content: "Kiểm tra Cấp thực hiện, Tỉnh thành, Thủ tục hành chính, Cơ quan thực hiện, Đơn vị tiếp nhận và Đối tượng thực hiện, rồi nhấn Xác nhận." },
+      { title: "Bước 1 – Thông tin chủ hồ sơ", content: "Thông tin định danh được điền sẵn. Bổ sung ngày cấp, nơi cấp giấy tờ, số điện thoại, email và địa chỉ chi tiết, rồi nhấn Bước tiếp theo." },
+      { title: "Bước 2 – Kê khai người yêu cầu", content: "Điền mẫu điện tử tương tác phần I: họ tên, số định danh cá nhân, giấy tờ tùy thân, ngày và cơ quan cấp, loại cư trú và nơi cư trú của người yêu cầu." },
+      { title: "Chọn quan hệ & xem trước", content: "Tích chọn quan hệ với người được cấp bản sao (bản thân, vợ/chồng, con đẻ, cha/mẹ…), điền phần II về giấy tờ hộ tịch đã đăng ký, rồi nhấn Xem trước." },
+      { title: "Xem tờ khai điện tử", content: "Kiểm tra lại toàn bộ nội dung tờ khai, có thể thực hiện Ký số, sau đó nhấn Xác nhận." },
+      { title: "Bước 3 – Thành phần hồ sơ", content: "Tờ khai được tạo tự động thành tệp Tờ khai.pdf. Nhấn Chọn tệp đính kèm để tải lên văn bản ủy quyền hoặc giấy tờ tùy thân nếu thuộc trường hợp phải nộp, rồi nhấn Bước tiếp theo." },
+      { title: "Bước 4 – Nhận kết quả & lệ phí", content: "Chọn nơi và hình thức nhận kết quả, nhập số lượng phiếu sao trích lục (8.000đ/bản), rồi nhấn Gửi hồ sơ." },
+      { title: "Nộp hồ sơ thành công", content: "Màn hình báo Gửi hồ sơ thành công kèm mã hồ sơ và số tiền cần thanh toán khi nhận kết quả. Nhấn Hồ sơ của tôi để theo dõi tiến độ." },
     ],
   },
 ];

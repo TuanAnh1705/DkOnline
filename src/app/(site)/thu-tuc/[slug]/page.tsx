@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { getProcedureBySlug, getPublishedProcedureSlugs } from "@/lib/queries";
 import { StepsTimeline } from "@/components/site/steps-timeline";
+import { PortalLoginNotice } from "@/components/site/portal-login-notice";
 import { VideoPlayer } from "@/components/site/video-player";
 import { Badge } from "@/components/ui/badge";
 import { buttonClass } from "@/components/ui/button";
@@ -116,6 +117,10 @@ export default async function ProcedureDetailPage({
 
       {/* Nội dung */}
       <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
+        <Reveal className="mb-12">
+          <PortalLoginNotice />
+        </Reveal>
+
         {steps.length > 0 ? (
           <StepsTimeline steps={steps} />
         ) : (

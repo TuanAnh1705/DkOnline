@@ -71,8 +71,10 @@ async function importProcedure(spec: ProcedureSpec) {
     ? await getCategoryId(spec.categorySlug, spec.categoryName ?? spec.categorySlug)
     : null;
 
-  // Ảnh trong thư mục, sắp theo tên (khớp thứ tự chụp) — ghép với caption theo index
-  const images = readdirSync(spec.dir)
+  // Ảnh lấy từ imagesDir nếu có (vd "annotated" — ảnh đã khoanh đỏ, đặt tên buoc-NN),
+  // ngược lại lấy ngay trong spec.dir. Video luôn nằm ở spec.dir.
+  const imgDir = spec.imagesDir ? join(spec.dir, spec.imagesDir) : spec.dir;
+  const images = readdirSync(imgDir)
     .filter((f) => /\.jpe?g$/i.test(f))
     .sort();
   if (images.length !== spec.steps.length) {
@@ -88,7 +90,7 @@ async function importProcedure(spec: ProcedureSpec) {
     // imgIndex (1-based) cho phép chỉ định ảnh sort thứ mấy; nếu không có -> theo vị trí
     const img = s.imgIndex ? images[s.imgIndex - 1] : images[i];
     const url = await uploadCached(
-      join(spec.dir, img),
+      join(imgDir, img),
       `${spec.slug}-buoc-${i + 1}.jpg`,
     );
     console.log(`   ✓ bước ${i + 1}/${n}`);
