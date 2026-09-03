@@ -8,17 +8,21 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonClass } from "@/components/ui/button";
 import { LogoMark } from "@/components/site/logo-mark";
+import { FontSizeControl } from "@/components/site/font-size-control";
+import { LangToggle } from "@/components/site/lang-toggle";
+import { useTr, type Bi } from "@/lib/i18n";
 
-const NAV = [
-  { href: "/", label: "Trang chủ" },
-  { href: "/thu-tuc", label: "Thủ tục" },
-  { href: "/#linh-vuc", label: "Lĩnh vực" },
-  { href: "/cau-hoi-thuong-gap", label: "Hỏi đáp" },
-  { href: "/gioi-thieu", label: "Giới thiệu" },
+const NAV: { href: string; label: Bi }[] = [
+  { href: "/", label: { vi: "Trang chủ", en: "Home" } },
+  { href: "/thu-tuc", label: { vi: "Thủ tục", en: "Procedures" } },
+  { href: "/#linh-vuc", label: { vi: "Lĩnh vực", en: "Categories" } },
+  { href: "/cau-hoi-thuong-gap", label: { vi: "Hỏi đáp", en: "FAQ" } },
+  { href: "/gioi-thieu", label: { vi: "Giới thiệu", en: "About" } },
 ];
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const tr = useTr();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -33,6 +37,7 @@ export function SiteHeader() {
 
   return (
     <header
+      data-no-print
       className={cn(
         "sticky top-0 z-40 transition-all duration-300",
         scrolled
@@ -42,15 +47,15 @@ export function SiteHeader() {
     >
       {/* chỉ vàng thếp mảnh ở đỉnh */}
       <div className="rule-gold h-px w-full opacity-70" />
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="group flex items-center gap-2.5">
-          <LogoMark className="size-9 transition group-hover:scale-105" />
-          <span className="flex flex-col gap-0.5 leading-tight">
-            <span className="font-display text-[16px] font-bold leading-tight tracking-tight text-ink">
-              Cẩm nang hồ sơ
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6">
+        <Link href="/" className="group flex min-w-0 items-center gap-2 sm:gap-2.5">
+          <LogoMark className="size-8 shrink-0 transition group-hover:scale-105 sm:size-9" />
+          <span className="flex min-w-0 flex-col gap-0.5 leading-tight">
+            <span className="truncate font-display text-[15px] font-bold leading-tight tracking-tight text-ink sm:text-[16px]">
+              {tr("Cẩm nang hồ sơ", "Paperwork Guide")}
             </span>
-            <span className="text-[10.5px] font-semibold uppercase leading-tight tracking-[0.14em] text-accent-600">
-              Dịch vụ công trực tuyến
+            <span className="truncate text-[10px] font-semibold uppercase leading-tight tracking-[0.12em] text-accent-600 sm:text-[10.5px] sm:tracking-[0.14em]">
+              {tr("Dịch vụ công trực tuyến", "Public services online")}
             </span>
           </span>
         </Link>
@@ -73,7 +78,7 @@ export function SiteHeader() {
                     : "text-ink/70 hover:bg-brand-50/70 hover:text-brand-700",
                 )}
               >
-                {item.label}
+                {tr(item.label)}
                 {active && (
                   <span className="absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-gradient-to-r from-brand-600 to-accent-500" />
                 )}
@@ -82,19 +87,28 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <a
-            href="https://dichvucong.gov.vn"
-            target="_blank"
-            rel="noreferrer"
-            className={cn("hidden sm:inline-flex", buttonClass("primary", "sm"))}
-          >
-            Cổng DVC Quốc gia
-          </a>
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <LangToggle />
+          <span className="hidden sm:block">
+            <FontSizeControl />
+          </span>
+          {/* `cn` chỉ nối chuỗi nên không thể đặt "hidden" cạnh "inline-flex"
+              của buttonClass — bọc ngoài để ẩn hẳn trên màn hình nhỏ. */}
+          <span className="hidden lg:block">
+            <a
+              href="https://dichvucong.gov.vn"
+              target="_blank"
+              rel="noreferrer"
+              className={buttonClass("primary", "sm")}
+            >
+              {tr("Cổng DVC Quốc gia", "National Portal")}
+            </a>
+          </span>
           <button
             onClick={() => setOpen((v) => !v)}
-            className="rounded-lg p-2 text-slate-700 hover:bg-slate-100 lg:hidden"
-            aria-label="Menu"
+            className="-mr-1 grid size-10 place-items-center rounded-lg text-slate-700 hover:bg-slate-100 lg:hidden"
+            aria-label={tr("Menu", "Menu")}
+            aria-expanded={open}
           >
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
@@ -110,24 +124,30 @@ export function SiteHeader() {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden border-t border-slate-100 glass lg:hidden"
           >
-            <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3">
+            <nav className="mx-auto flex max-h-[70vh] max-w-6xl flex-col gap-1 overflow-y-auto px-4 py-3">
               {NAV.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                  className="rounded-lg px-3 py-3 text-base font-semibold text-slate-700 hover:bg-slate-100"
                 >
-                  {item.label}
+                  {tr(item.label)}
                 </Link>
               ))}
               <a
                 href="https://dichvucong.gov.vn"
                 target="_blank"
                 rel="noreferrer"
-                className="mt-1 inline-flex items-center gap-1.5 rounded-lg px-3 py-2.5 text-sm font-semibold text-brand-700"
+                className="inline-flex items-center gap-1.5 rounded-lg px-3 py-3 text-base font-semibold text-brand-700"
               >
-                Cổng DVC Quốc gia ↗
+                {tr("Cổng DVC Quốc gia", "National Public Service Portal")} ↗
               </a>
+              <div className="mt-1 flex items-center gap-3 border-t border-line px-3 pt-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-ink/40">
+                  {tr("Cỡ chữ", "Text size")}
+                </span>
+                <FontSizeControl />
+              </div>
             </nav>
           </motion.div>
         )}

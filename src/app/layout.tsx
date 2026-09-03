@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Be_Vietnam_Pro, Lora } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const beVietnam = Be_Vietnam_Pro({
@@ -35,7 +36,12 @@ export default function RootLayout({
       lang="vi"
       className={`${beVietnam.variable} ${lora.variable} h-full antialiased`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <Script id="font-scale-init" strategy="beforeInteractive">
+          {`try{var s=localStorage.getItem("nophso:font-scale");if(s==="md"||s==="lg")document.documentElement.dataset.fontScale=s;}catch(e){}`}
+        </Script>
+        {children}
+      </body>
     </html>
   );
 }

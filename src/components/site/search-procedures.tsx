@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Search, X } from "lucide-react";
 import { ProcedureCard } from "./procedure-card";
 import { cn } from "@/lib/utils";
+import { useTr } from "@/lib/i18n";
+import { useTranslated } from "@/lib/use-translated";
 import type { ProcedureCardData } from "@/types";
 
 interface Cat {
@@ -22,6 +24,7 @@ export function SearchProcedures({
   categories: Cat[];
   initialQuery?: string;
 }) {
+  const tr = useTr();
   const [query, setQuery] = useState(initialQuery);
   const [cat, setCat] = useState<string>("all");
 
@@ -45,13 +48,17 @@ export function SearchProcedures({
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Tìm thủ tục theo tên, ví dụ: kết hôn, khai sinh…"
+            placeholder={tr(
+              "Tìm thủ tục theo tên, ví dụ: kết hôn, khai sinh…",
+              "Search by name, e.g. marriage, birth registration…",
+            )}
             className="w-full rounded-xl border border-slate-200 bg-slate-50/60 py-3.5 pl-12 pr-11 text-[15px] text-slate-900 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/15"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1 text-slate-400 hover:bg-slate-100"
+              aria-label={tr("Xoá từ khoá", "Clear search")}
+              className="absolute right-2 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-lg text-slate-400 hover:bg-slate-100"
             >
               <X className="size-4" />
             </button>
@@ -59,35 +66,40 @@ export function SearchProcedures({
         </div>
 
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
-            Lĩnh vực
+          <span className="mr-1 w-full text-xs font-bold uppercase tracking-[0.14em] text-slate-400 sm:w-auto">
+            {tr("Lĩnh vực", "Category")}
           </span>
           <Chip active={cat === "all"} onClick={() => setCat("all")}>
-            Tất cả
+            {tr("Tất cả", "All")}
           </Chip>
           {categories.map((c) => (
             <Chip key={c.id} active={cat === c.id} onClick={() => setCat(c.id)}>
-              {c.name}
+              <CategoryName name={c.name} />
             </Chip>
           ))}
         </div>
       </div>
 
       <p className="mt-5 text-sm text-slate-500">
-        Tìm thấy{" "}
-        <span className="font-bold text-slate-900">{filtered.length}</span> thủ
-        tục
+        {tr("Tìm thấy", "Found")}{" "}
+        <span className="font-bold text-slate-900">{filtered.length}</span>{" "}
+        {tr("thủ tục", filtered.length === 1 ? "procedure" : "procedures")}
       </p>
 
       {filtered.length === 0 ? (
-        <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white p-14 text-center">
-          <p className="font-semibold text-slate-700">Không có kết quả phù hợp</p>
+        <div className="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center sm:p-14">
+          <p className="font-semibold text-slate-700">
+            {tr("Không có kết quả phù hợp", "No matching results")}
+          </p>
           <p className="mt-1 text-sm text-slate-500">
-            Thử từ khóa khác hoặc chọn lĩnh vực “Tất cả”.
+            {tr(
+              "Thử từ khóa khác hoặc chọn lĩnh vực “Tất cả”.",
+              "Try another keyword, or pick the “All” category.",
+            )}
           </p>
         </div>
       ) : (
-        <motion.div layout className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <motion.div layout className="mt-4 grid gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
           <AnimatePresence>
             {filtered.map((p) => (
               <motion.div
@@ -107,6 +119,11 @@ export function SearchProcedures({
       )}
     </div>
   );
+}
+
+/** Tên lĩnh vực lấy từ CSDL — dịch máy khi xem tiếng Anh. */
+function CategoryName({ name }: { name: string }) {
+  return <>{useTranslated(name)}</>;
 }
 
 function Chip({

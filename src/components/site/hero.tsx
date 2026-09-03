@@ -8,6 +8,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Search, Check } from "lucide-react";
 import { buttonClass } from "@/components/ui/button";
 import { DrumMotif } from "@/components/site/ornament";
+import { useTr } from "@/lib/i18n";
+import { useTranslated } from "@/lib/use-translated";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -22,6 +24,7 @@ export function Hero({
 }) {
   const root = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const tr = useTr();
   const [q, setQ] = useState("");
 
   function submit(e: React.FormEvent) {
@@ -88,26 +91,31 @@ export function Hero({
       <div className="hero-blob pointer-events-none absolute -top-24 left-1/3 h-80 w-[46rem] -translate-x-1/2 rounded-full bg-brand-500/15 blur-3xl" />
       <div className="hero-blob pointer-events-none absolute top-40 right-0 h-72 w-72 rounded-full bg-accent-400/20 blur-3xl" />
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-4 pt-14 pb-24 sm:px-6 lg:grid-cols-2 lg:pt-20">
+      <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-10 sm:gap-12 sm:px-6 sm:pb-24 sm:pt-14 lg:grid-cols-2 lg:pt-20">
         <div>
           <span className="hero-badge inline-flex items-center gap-2.5 rounded-full border border-accent-500/30 bg-white/60 px-3.5 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-brand-700 shadow-sm">
             <span className="size-1.5 rounded-full bg-accent-500" />
-            Hướng dẫn bằng hình ảnh & video
+            {tr("Hướng dẫn bằng hình ảnh & video", "Guides with photos & video")}
           </span>
 
-          <h1 className="mt-6 font-display text-4xl font-bold leading-[1.06] tracking-tight text-ink sm:text-5xl lg:text-[3.5rem]">
+          <h1 className="mt-5 font-display text-[32px] font-bold leading-[1.08] tracking-tight text-ink sm:mt-6 sm:text-5xl lg:text-[3.5rem]">
             <span className="block overflow-hidden pb-1">
-              <span className="hero-line block">Tự tin hoàn thành</span>
+              <span className="hero-line block">
+                {tr("Tự tin hoàn thành", "Handle every")}
+              </span>
             </span>
             <span className="block overflow-hidden pb-2">
-              <span className="hero-line block text-gradient">mọi thủ tục hành chính</span>
+              <span className="hero-line block text-gradient">
+                {tr("mọi thủ tục hành chính", "government procedure")}
+              </span>
             </span>
           </h1>
 
-          <p className="hero-sub mt-6 max-w-lg text-lg leading-relaxed text-ink/70">
-            Từ khai sinh, kết hôn đến khai tử — mỗi thủ tục được hướng dẫn chi
-            tiết bằng hình ảnh và video, dẫn thẳng tới trang nộp hồ sơ trực tuyến
-            của Cổng Dịch vụ công Quốc gia.
+          <p className="hero-sub mt-5 max-w-lg text-base leading-relaxed text-ink/70 sm:mt-6 sm:text-lg">
+            {tr(
+              "Từ khai sinh, kết hôn đến khai tử — mỗi thủ tục được hướng dẫn chi tiết bằng hình ảnh và video, dẫn thẳng tới trang nộp hồ sơ trực tuyến của Cổng Dịch vụ công Quốc gia.",
+              "From birth and marriage registration to death registration — every procedure comes with detailed photo and video guidance, then takes you straight to the online form on the National Public Service Portal.",
+            )}
           </p>
 
           <form onSubmit={submit} className="hero-search mt-7 max-w-lg">
@@ -118,85 +126,93 @@ export function Hero({
               <input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Bạn cần làm thủ tục gì?"
-                className="min-w-0 flex-1 bg-transparent py-4 pl-3 text-[15px] outline-none placeholder:text-ink/40"
+                placeholder={tr("Bạn cần làm thủ tục gì?", "Which procedure do you need?")}
+                className="min-w-0 flex-1 bg-transparent py-3.5 pl-3 text-[15px] outline-none placeholder:text-ink/40 sm:py-4"
               />
-              <button type="submit" className={`m-1.5 ${buttonClass("primary", "md")}`}>
-                Tìm kiếm
+              <button
+                type="submit"
+                className={`m-1.5 shrink-0 ${buttonClass("primary", "md")}`}
+              >
+                {tr("Tìm kiếm", "Search")}
               </button>
             </div>
             {suggestions.length > 0 && (
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="text-xs font-semibold text-ink/40">Phổ biến:</span>
+                <span className="text-xs font-semibold text-ink/40">
+                  {tr("Phổ biến:", "Popular:")}
+                </span>
                 {suggestions.slice(0, 4).map((s) => (
-                  <Link
-                    key={s}
-                    href={`/thu-tuc?q=${encodeURIComponent(s)}`}
-                    className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-ink/70 ring-1 ring-line transition hover:bg-brand-50 hover:text-brand-700 hover:ring-brand-200"
-                  >
-                    {s}
-                  </Link>
+                  <SuggestionChip key={s} text={s} />
                 ))}
               </div>
             )}
           </form>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center">
             <Link href="/thu-tuc" className={`hero-cta ${buttonClass("secondary", "lg")}`}>
-              Xem tất cả thủ tục
+              {tr("Xem tất cả thủ tục", "See all procedures")}
             </Link>
             <Link href="/cau-hoi-thuong-gap" className={`hero-cta ${buttonClass("ghost", "lg")}`}>
-              Câu hỏi thường gặp
+              {tr("Câu hỏi thường gặp", "FAQ")}
             </Link>
           </div>
 
-          <div className="mt-12 flex flex-wrap gap-10 border-t border-line pt-8">
-            <Stat count={procedureCount} label="Thủ tục hướng dẫn" />
-            <Stat count={categoryCount} label="Nhóm lĩnh vực" />
+          <div className="mt-10 flex flex-wrap gap-8 border-t border-line pt-7 sm:mt-12 sm:gap-10 sm:pt-8">
+            <Stat count={procedureCount} label={tr("Thủ tục hướng dẫn", "Guided procedures")} />
+            <Stat count={categoryCount} label={tr("Nhóm lĩnh vực", "Categories")} />
             <div className="hero-stat">
               <p className="font-display text-3xl font-bold text-ink">100%</p>
-              <p className="mt-0.5 text-sm text-ink/50">Trực tuyến, tại nhà</p>
+              <p className="mt-0.5 text-sm text-ink/50">
+                {tr("Trực tuyến, tại nhà", "Online, from home")}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Bộ thẻ mô phỏng khung hình video hướng dẫn — xếp chồng như một tập bước */}
-        <div className="hero-visual relative min-h-[30rem] [perspective:1400px]">
+        <div className="hero-visual relative min-h-[24rem] [perspective:1400px] sm:min-h-[30rem]">
           {/* Bước 22 — hoàn tất (phía sau, nghiêng trái) */}
           <StepCard
             variant="success"
             step={22}
             total={22}
-            title="Thanh toán thành công"
-            className="hero-card absolute left-0 top-28 z-0 w-64 -rotate-6 sm:w-72"
+            title={tr("Thanh toán thành công", "Payment successful")}
+            className="hero-card absolute left-0 top-24 z-0 w-52 -rotate-6 sm:top-28 sm:w-72"
           />
           {/* Bước 12 — kê khai (phía sau, nghiêng phải) */}
           <StepCard
             variant="mini"
             step={12}
             total={22}
-            title="Kê khai thông tin"
-            className="hero-card absolute right-0 top-2 z-10 w-64 rotate-3 sm:w-72"
+            title={tr("Kê khai thông tin", "Fill in your details")}
+            className="hero-card absolute right-0 top-2 z-10 w-52 rotate-3 sm:w-72"
           />
           {/* Bước 1 — biểu mẫu có khoanh đỏ (nổi bật phía trước) */}
           <StepCard
             variant="full"
             step={1}
             total={22}
-            title="Đăng nhập VNeID"
-            sub="Xác thực bằng tài khoản định danh điện tử"
-            className="hero-card float-a relative z-20 mx-auto w-[21rem] max-w-full"
+            title={tr("Đăng nhập VNeID", "Sign in with VNeID")}
+            sub={tr(
+              "Xác thực bằng tài khoản định danh điện tử",
+              "Verify with your digital identity account",
+            )}
+            className="hero-card float-a relative z-20 mx-auto w-[17rem] max-w-full sm:w-[21rem]"
           />
           {/* nhãn nổi */}
-          <div className="hero-card absolute -left-3 bottom-4 z-30 flex items-center gap-2 rounded-xl border border-line bg-white px-4 py-2.5 shadow-xl shadow-brand-900/10">
+          <div className="hero-card absolute bottom-4 left-0 z-30 flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-2 shadow-xl shadow-brand-900/10 sm:-left-3 sm:px-4 sm:py-2.5">
             <span className="grid size-6 place-items-center rounded-full bg-emerald-500 text-[11px] font-bold text-white">✓</span>
             <p className="text-xs font-semibold text-ink/80">
-              Hoàn thành trong <span className="font-bold text-brand-700">~10 phút</span>
+              {tr("Hoàn thành trong", "Done in")}{" "}
+              <span className="font-bold text-brand-700">~10 {tr("phút", "min")}</span>
             </p>
           </div>
-          <div className="hero-card float-b absolute -right-2 bottom-24 z-30 flex items-center gap-2 rounded-xl border border-accent-500/40 bg-white px-3 py-2 shadow-xl shadow-brand-900/10">
+          <div className="hero-card float-b absolute bottom-24 right-0 z-30 flex items-center gap-2 rounded-xl border border-accent-500/40 bg-white px-3 py-2 shadow-xl shadow-brand-900/10 sm:-right-2">
             <span className="grid size-6 place-items-center rounded-md bg-accent-400 text-[10px] font-black text-brand-900">▶</span>
-            <p className="text-xs font-semibold text-ink/80">Kèm video từng bước</p>
+            <p className="text-xs font-semibold text-ink/80">
+              {tr("Kèm video từng bước", "Video for every step")}
+            </p>
+
           </div>
         </div>
       </div>
@@ -222,6 +238,7 @@ function StepCard({
   variant?: "full" | "mini" | "success";
   className?: string;
 }) {
+  const tr = useTr();
   return (
     <div
       className={`overflow-hidden rounded-2xl border border-line bg-white shadow-2xl shadow-brand-900/10 ${className ?? ""}`}
@@ -232,7 +249,7 @@ function StepCard({
           {step}/{total}
         </span>
         <p className="truncate text-[13px] font-bold text-white">
-          Bước {step}: {title}
+          {tr(`Bước ${step}`, `Step ${step}`)}: {title}
         </p>
       </div>
 
@@ -276,12 +293,29 @@ function StepCard({
           <span className="grid size-11 place-items-center rounded-full bg-emerald-100 text-emerald-600 ring-4 ring-emerald-50">
             <Check className="size-6" />
           </span>
-          <p className="text-sm font-bold text-ink">Giao dịch thành công</p>
-          <p className="text-[11px] text-ink/50">Mã: TH20260713061185</p>
+          <p className="text-sm font-bold text-ink">
+            {tr("Giao dịch thành công", "Transaction successful")}
+          </p>
+          <p className="text-[11px] text-ink/50">
+            {tr("Mã", "Ref")}: TH20260713061185
+          </p>
           <p className="mt-1 font-display text-lg font-bold text-emerald-600">40.000 đ</p>
         </div>
       )}
     </div>
+  );
+}
+
+/** Gợi ý tìm kiếm lấy từ tên thủ tục trong CSDL nên cần dịch máy khi xem tiếng Anh. */
+function SuggestionChip({ text }: { text: string }) {
+  const label = useTranslated(text);
+  return (
+    <Link
+      href={`/thu-tuc?q=${encodeURIComponent(text)}`}
+      className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-ink/70 ring-1 ring-line transition hover:bg-brand-50 hover:text-brand-700 hover:ring-brand-200"
+    >
+      {label}
+    </Link>
   );
 }
 

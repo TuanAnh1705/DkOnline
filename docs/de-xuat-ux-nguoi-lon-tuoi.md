@@ -44,6 +44,23 @@ tuổi phải tạo thêm một tài khoản nữa là mất luôn tác dụng �
 
 ---
 
+## Đã triển khai (29/08/2026)
+
+Cả 6 đề xuất bên dưới đã được làm, theo đúng thứ tự khuyến nghị 3→1→4→2→6→5.
+Ghi chú các quyết định đã chốt lúc làm:
+
+- **TTS không có giọng Việt:** nút loa vẫn hiện, làm mờ (`disabled`) + tooltip
+  "Máy này chưa có giọng đọc tiếng Việt" thay vì ẩn hẳn — đã xác nhận đúng hành vi
+  này bằng test tự động (Chrome headless không có giọng vi-VN nên nút tự mờ).
+- **Bản in:** không in khối "bước 0" (nút đăng nhập Cổng DVC), header, footer, thanh
+  điều hướng bước, nút loa — chỉ giữ ảnh + mô tả từng bước (`@media print` +
+  `[data-no-print]` trong `globals.css`).
+- File chính: `src/components/site/procedure-steps.tsx` (gộp tính năng 1+2, 1
+  IntersectionObserver duy nhất), `step-nav-bar.tsx`, `image-lightbox.tsx`,
+  `font-size-control.tsx`, `step-tts-button.tsx` + `src/lib/tts.ts`,
+  `src/lib/lenis-singleton.ts` (để nhảy bước/mở lightbox không đánh nhau với cuộn
+  mượt Lenis).
+
 ## 6 đề xuất tiếp theo
 
 ### 1. Thanh điều hướng bước cố định ở đáy màn hình
@@ -89,6 +106,25 @@ Nút hình loa ở mỗi bước, dùng giọng đọc sẵn có của trình du
 - **Rủi ro:** **chất lượng giọng tiếng Việt phụ thuộc máy người dùng** — máy cũ có thể
   không có giọng Việt, đọc ra rất khó nghe hoặc không đọc được. Nên thử trên máy thật
   trước khi quyết định giữ.
+- **Bug đã gặp + sửa (29/08/2026):** trên Windows/Chrome, `getVoices()` trả về danh
+  sách giọng mạng ("Google ...") gần như ngay lập tức, còn giọng cục bộ của hệ điều
+  hành (vd "Microsoft An - Vietnamese") nạp **muộn hơn** qua một sự kiện
+  `voiceschanged` riêng. Code cũ chốt kết quả ngay khi thấy danh sách không rỗng nên
+  bỏ lỡ giọng Việt cục bộ → nút bị tắt oan dù máy có sẵn giọng, im lặng khi bấm. Đã
+  sửa trong `src/lib/tts.ts`: chờ tới khi thấy giọng "vi" hoặc poll tối đa ~2.5s.
+
+### 5b. Dịch nội dung hướng dẫn Việt ↔ Anh (bổ sung 29/08/2026)
+1 nút "View in English" / "Xem bằng tiếng Việt" ở đầu trang thủ tục, dịch tiêu đề +
+mô tả + toàn bộ nội dung từng bước bằng API miễn phí MyMemory (không cần API key).
+
+- **Vì sao:** người nước ngoài/Việt kiều không rành tiếng Việt cần đọc hiểu hướng dẫn.
+- **Giới hạn đã biết:** MyMemory miễn phí nên chất lượng dịch máy chỉ ở mức chấp
+  nhận được (không tinh chỉnh thuật ngữ hành chính), giới hạn ~500 ký tự/lần gọi
+  (đã tự cắt câu dài), và ~5000 từ/ngày cho khách ẩn danh. Kết quả dịch được cache
+  trong bộ nhớ phiên nên bấm qua lại VI↔EN không gọi mạng lại, nhưng dịch xong không
+  lưu vào DB — tải lại trang phải dịch lại từ đầu.
+- File: `src/lib/translate.ts`, `src/components/site/procedure-content.tsx` (gộp
+  toàn bộ nội dung trang thủ tục vào 1 client component để chia sẻ state ngôn ngữ).
 
 ### 6. In hướng dẫn ra giấy
 Nút "In hướng dẫn" xuất bản rút gọn: ảnh + mô tả từng bước, bỏ menu/nút/hiệu ứng.

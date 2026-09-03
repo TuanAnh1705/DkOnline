@@ -1,10 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Play } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useTr } from "@/lib/i18n";
+import { useTranslated } from "@/lib/use-translated";
 import type { ProcedureCardData } from "@/types";
 
 export function ProcedureCard({ procedure }: { procedure: ProcedureCardData }) {
+  const tr = useTr();
+  const title = useTranslated(procedure.title);
+  const summary = useTranslated(procedure.summary);
+  const categoryName = useTranslated(procedure.category?.name ?? null);
+
   return (
     <Link
       href={`/thu-tuc/${procedure.slug}`}
@@ -18,9 +27,9 @@ export function ProcedureCard({ procedure }: { procedure: ProcedureCardData }) {
           <>
             <Image
               src={procedure.thumbnailUrl}
-              alt={procedure.title}
+              alt={title}
               fill
-              sizes="(max-width: 768px) 100vw, 33vw"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               className="object-cover transition-transform duration-700 group-hover:scale-[1.06]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-brand-900/25 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
@@ -28,14 +37,14 @@ export function ProcedureCard({ procedure }: { procedure: ProcedureCardData }) {
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-50 via-parchment to-white">
             <span className="px-6 text-center font-display text-base font-semibold text-brand-300">
-              {procedure.category?.name ?? "Thủ tục"}
+              {categoryName ?? tr("Thủ tục", "Procedure")}
             </span>
           </div>
         )}
 
         {procedure.category && (
           <span className="absolute left-3 top-3">
-            <Badge tone="brand">{procedure.category.name}</Badge>
+            <Badge tone="brand">{categoryName}</Badge>
           </span>
         )}
         {procedure.videoUrl && (
@@ -48,23 +57,26 @@ export function ProcedureCard({ procedure }: { procedure: ProcedureCardData }) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
         <h3 className="font-display text-base font-semibold leading-snug text-ink transition group-hover:text-brand-700">
-          {procedure.title}
+          {title}
         </h3>
-        {procedure.summary && (
+        {summary && (
           <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink/55">
-            {procedure.summary}
+            {summary}
           </p>
         )}
-        <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
+        <div className="mt-4 flex items-center justify-between gap-2 border-t border-line pt-4">
           <span className="text-xs font-semibold text-ink/50">
             {procedure._count.steps > 0
-              ? `${procedure._count.steps} bước hướng dẫn`
-              : "Đang cập nhật"}
+              ? tr(
+                  `${procedure._count.steps} bước hướng dẫn`,
+                  `${procedure._count.steps} guided steps`,
+                )
+              : tr("Đang cập nhật", "Coming soon")}
           </span>
-          <span className="inline-flex items-center gap-1.5 text-sm font-bold text-brand-600 transition-transform duration-300 group-hover:translate-x-1">
-            Xem
+          <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-brand-600 transition-transform duration-300 group-hover:translate-x-1">
+            {tr("Xem", "View")}
             <ArrowRight className="size-4" />
           </span>
         </div>

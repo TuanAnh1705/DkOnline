@@ -4,13 +4,15 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTr, type Bi } from "@/lib/i18n";
 
 export interface FaqItem {
-  q: string;
-  a: string;
+  q: Bi;
+  a: Bi;
 }
 
 export function FaqAccordion({ items }: { items: FaqItem[] }) {
+  const tr = useTr();
   const [open, setOpen] = useState<number | null>(0);
 
   return (
@@ -27,9 +29,10 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
           >
             <button
               onClick={() => setOpen(isOpen ? null : i)}
-              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+              className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left sm:gap-4 sm:px-5"
+              aria-expanded={isOpen}
             >
-              <span className="font-bold text-slate-900">{item.q}</span>
+              <span className="font-bold text-slate-900">{tr(item.q)}</span>
               <ChevronDown
                 className={cn(
                   "size-5 shrink-0 text-brand-600 transition-transform duration-300",
@@ -45,8 +48,8 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <p className="step-content px-5 pb-5 text-[15px] leading-relaxed text-slate-600">
-                    {item.a}
+                  <p className="step-content px-4 pb-5 text-[15px] leading-relaxed text-slate-600 sm:px-5">
+                    {tr(item.a)}
                   </p>
                 </motion.div>
               )}

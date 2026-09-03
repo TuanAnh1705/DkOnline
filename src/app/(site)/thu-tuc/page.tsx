@@ -35,11 +35,17 @@ export default async function AllProceduresPage({
   return (
     <>
       <PageHero
-        eyebrow={`${procedures.length} thủ tục`}
-        title="Danh sách thủ tục"
-        desc="Chọn thủ tục bạn cần để xem hướng dẫn chi tiết từng bước bằng hình ảnh và video."
+        eyebrow={{
+          vi: `${procedures.length} thủ tục`,
+          en: `${procedures.length} procedures`,
+        }}
+        title={{ vi: "Danh sách thủ tục", en: "All procedures" }}
+        desc={{
+          vi: "Chọn thủ tục bạn cần để xem hướng dẫn chi tiết từng bước bằng hình ảnh và video.",
+          en: "Pick the procedure you need to see a detailed step-by-step guide with photos and video.",
+        }}
       />
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
         <SearchProcedures
           procedures={cards}
           categories={categories.map((c) => ({
