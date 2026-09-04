@@ -19,13 +19,32 @@ const lora = Lora({
   display: "swap",
 });
 
+const SITE_NAME = "Cẩm nang hướng dẫn nộp hồ sơ trực tuyến";
+const SITE_DESCRIPTION =
+  "Hướng dẫn nộp hồ sơ dịch vụ công trực tuyến từng bước bằng hình ảnh và video.";
+
 export const metadata: Metadata = {
+  // Bắt buộc phải có để các URL ảnh (og:image, twitter:image, icon...) trong <head>
+  // được ghép thành đường dẫn tuyệt đối đúng domain thật — nếu để trống, Next chỉ
+  // build được với localhost:3000, sai khi chia sẻ link ở production.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: {
-    default: "Cẩm nang nộp hồ sơ trực tuyến",
-    template: "%s · Cẩm nang nộp hồ sơ trực tuyến",
+    default: SITE_NAME,
+    template: `%s · ${SITE_NAME}`,
   },
-  description:
-    "Hướng dẫn nộp hồ sơ dịch vụ công trực tuyến từng bước bằng hình ảnh và video, dễ hiểu, dễ làm theo.",
+  description: SITE_DESCRIPTION,
+  // Không khai title/description/images riêng ở đây — Next tự lấy từ `title`/
+  // `description` phía trên và từ file opengraph-image.png/twitter-image.png cho
+  // từng trang, nên tiêu đề + mô tả + ảnh logo luôn khớp nội dung khi dán link
+  // (Facebook, Zalo, Telegram, Twitter/X…) mà không cần khai lại ở mỗi trang.
+  openGraph: {
+    type: "website",
+    locale: "vi_VN",
+    siteName: SITE_NAME,
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({

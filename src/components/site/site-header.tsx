@@ -18,6 +18,7 @@ const NAV: { href: string; label: Bi }[] = [
   { href: "/#linh-vuc", label: { vi: "Lĩnh vực", en: "Categories" } },
   { href: "/cau-hoi-thuong-gap", label: { vi: "Hỏi đáp", en: "FAQ" } },
   { href: "/gioi-thieu", label: { vi: "Giới thiệu", en: "About" } },
+  { href: "/lien-he", label: { vi: "Liên hệ", en: "Contact" } },
 ];
 
 export function SiteHeader() {
@@ -47,12 +48,14 @@ export function SiteHeader() {
     >
       {/* chỉ vàng thếp mảnh ở đỉnh */}
       <div className="rule-gold h-px w-full opacity-70" />
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6">
+      {/* Thanh header dùng khung rộng hơn nội dung (max-w-7xl thay vì 6xl) vì tên đầy đủ
+          "Cẩm nang hướng dẫn nộp hồ sơ trực tuyến" + 6 mục menu cần nhiều chỗ hơn. */}
+      <div className="mx-auto flex h-16 max-w-[84rem] items-center justify-between gap-2 px-4 sm:gap-4 sm:px-6">
         <Link href="/" className="group flex min-w-0 items-center gap-2 sm:gap-2.5">
           <LogoMark className="size-8 shrink-0 transition group-hover:scale-105 sm:size-9" />
           <span className="flex min-w-0 flex-col gap-0.5 leading-tight">
             <span className="truncate font-display text-[15px] font-bold leading-tight tracking-tight text-ink sm:text-[16px]">
-              {tr("Cẩm nang hồ sơ", "Paperwork Guide")}
+              {tr("Cẩm nang hướng dẫn nộp hồ sơ trực tuyến", "Online Application Filing Guide")}
             </span>
             <span className="truncate text-[10px] font-semibold uppercase leading-tight tracking-[0.12em] text-accent-600 sm:text-[10.5px] sm:tracking-[0.14em]">
               {tr("Dịch vụ công trực tuyến", "Public services online")}

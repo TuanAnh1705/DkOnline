@@ -1,6 +1,6 @@
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
-import { SmoothScroll } from "@/components/site/smooth-scroll";
+import { SmoothScrollLoader as SmoothScroll } from "@/components/site/smooth-scroll-loader";
 import { ScrollProgress } from "@/components/site/scroll-progress";
 import { LangProvider } from "@/lib/i18n";
 

@@ -101,7 +101,8 @@ export function ProcedureContent({
   // Thẻ <title> do server render nên vẫn là tiếng Việt; cập nhật lại cho khớp
   // ngôn ngữ đang xem (trả về nguyên trạng khi quay lại tiếng Việt).
   useEffect(() => {
-    const suffix = lang === "en" ? "Online Paperwork Guide" : "Cẩm nang nộp hồ sơ trực tuyến";
+    const suffix =
+      lang === "en" ? "Online Application Filing Guide" : "Cẩm nang hướng dẫn nộp hồ sơ trực tuyến";
     const heading = lang === "en" && enRef.current ? enRef.current.title : title;
     document.title = `${heading} · ${suffix}`;
   }, [lang, title, en]);

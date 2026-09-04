@@ -51,7 +51,7 @@ export function LoginForm({ next }: { next: string }) {
             <span className="grid size-11 place-items-center rounded-xl bg-white/15 backdrop-blur">
               <Landmark className="size-6" />
             </span>
-            <span className="text-lg font-extrabold">Cẩm nang hồ sơ</span>
+            <span className="text-lg font-extrabold">Cẩm nang hướng dẫn nộp hồ sơ trực tuyến</span>
           </Link>
           <div>
             <h2 className="text-3xl font-extrabold leading-tight">
@@ -68,7 +68,7 @@ export function LoginForm({ next }: { next: string }) {
             </div>
           </div>
           <p className="text-xs text-brand-200/80">
-            © {new Date().getFullYear()} Cẩm nang hồ sơ trực tuyến
+            © {new Date().getFullYear()} Cẩm nang hướng dẫn nộp hồ sơ trực tuyến
           </p>
         </div>
       </div>

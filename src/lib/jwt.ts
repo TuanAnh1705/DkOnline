@@ -9,6 +9,14 @@ export interface SessionPayload {
   [key: string]: unknown;
 }
 
+// Không bao giờ cho phép chạy production với secret mặc định đoán được — thà app
+// không khởi động được còn hơn âm thầm ký/kiểm phiên đăng nhập admin bằng secret lộ.
+if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
+  throw new Error(
+    "JWT_SECRET chưa được thiết lập. Không thể chạy production với secret mặc định — xem .env.example.",
+  );
+}
+
 const secret = new TextEncoder().encode(
   process.env.JWT_SECRET ?? "insecure-dev-secret-change-me",
 );

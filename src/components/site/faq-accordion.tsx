@@ -9,6 +9,8 @@ import { useTr, type Bi } from "@/lib/i18n";
 export interface FaqItem {
   q: Bi;
   a: Bi;
+  /** Slug nhóm — dùng để lọc trong FaqExplorer, không bắt buộc. */
+  category?: string;
 }
 
 export function FaqAccordion({ items }: { items: FaqItem[] }) {
