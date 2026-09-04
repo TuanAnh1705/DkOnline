@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { procedureInputSchema } from "@/lib/validation";
+import { buildRegistrationUrl } from "@/lib/utils";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -50,7 +51,7 @@ export async function PUT(req: Request, ctx: Ctx) {
         categoryId: data.categoryId || null,
         thumbnailUrl: data.thumbnailUrl || null,
         videoUrl: data.videoUrl || null,
-        registrationUrl: data.registrationUrl || null,
+        registrationUrl: data.registrationUrl || buildRegistrationUrl(data.title),
         status: data.status,
         steps: {
           create: data.steps.map((s, idx) => ({

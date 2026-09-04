@@ -14,6 +14,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea } from "@/components/ui/field";
 import { MediaUpload } from "./media-upload";
+import { buildRegistrationUrl } from "@/lib/utils";
 import type { ProcedureDetailData } from "@/types";
 
 export interface CategoryOption {
@@ -75,6 +76,8 @@ export function ProcedureFormDialog({
         }))
       : [emptyStep()],
   );
+
+  const autoRegistrationUrl = title.trim() ? buildRegistrationUrl(title.trim()) : "";
 
   const [newCatOpen, setNewCatOpen] = useState(false);
   const [newCatName, setNewCatName] = useState("");
@@ -282,10 +285,24 @@ export function ProcedureFormDialog({
               <Input
                 value={registrationUrl}
                 onChange={(e) => setRegistrationUrl(e.target.value)}
-                placeholder="https://dichvucong.gov.vn/..."
-                className="pl-10"
+                placeholder={autoRegistrationUrl || "https://dichvucong.gov.vn/..."}
+                className="pl-10 pr-24"
               />
+              {autoRegistrationUrl && (
+                <button
+                  type="button"
+                  onClick={() => setRegistrationUrl(autoRegistrationUrl)}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg px-2.5 py-1 text-xs font-semibold text-brand-600 transition hover:bg-brand-50"
+                >
+                  Dùng gợi ý
+                </button>
+              )}
             </div>
+            <p className="mt-1.5 text-xs text-slate-500">
+              Để trống thì khi lưu sẽ tự sinh link tìm kiếm trên dichvucong.gov.vn theo
+              tên thủ tục ở trên. Chỉ tự nhập link khác nếu thủ tục cần trang riêng
+              (vd dịch vụ công liên thông).
+            </p>
           </div>
         </div>
 

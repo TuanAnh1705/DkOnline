@@ -14,6 +14,7 @@ import {
   Plus,
   Search,
   Trash2,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/field";
@@ -42,7 +43,11 @@ export function ProceduresBoard({
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ProcedureDetailData | null>(null);
   const [deleting, setDeleting] = useState<ProcedureCardData | null>(null);
+  const [deletingCat, setDeletingCat] = useState<
+    (CategoryOption & { _count?: { procedures: number } }) | null
+  >(null);
   const [busy, setBusy] = useState(false);
+  const [catBusy, setCatBusy] = useState(false);
 
   const filtered = useMemo(() => {
     return procedures.filter((p) => {
@@ -83,6 +88,19 @@ export function ProceduresBoard({
     }
   }
 
+  async function confirmDeleteCategory() {
+    if (!deletingCat) return;
+    setCatBusy(true);
+    try {
+      await fetch(`/api/categories/${deletingCat.id}`, { method: "DELETE" });
+      if (filter === deletingCat.id) setFilter("all");
+      setDeletingCat(null);
+      router.refresh();
+    } finally {
+      setCatBusy(false);
+    }
+  }
+
   return (
     <div>
       {/* Thanh công cụ */}
@@ -109,14 +127,38 @@ export function ProceduresBoard({
         {categories.map((c) => {
           const count = procedures.filter((p) => p.category?.id === c.id).length;
           return (
-            <FilterChip
+            <span
               key={c.id}
-              active={filter === c.id}
-              onClick={() => setFilter(c.id)}
+              className={cn(
+                "group/chip inline-flex items-center gap-1.5 rounded-full py-1.5 pl-3.5 pr-1.5 text-sm font-semibold transition",
+                filter === c.id
+                  ? "bg-brand-600 text-white shadow-sm shadow-brand-600/30"
+                  : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50",
+              )}
             >
-              <CategoryIcon name={c.icon} className="size-3.5" />
-              {c.name} ({count})
-            </FilterChip>
+              <button
+                onClick={() => setFilter(c.id)}
+                className="inline-flex items-center gap-1.5"
+              >
+                <CategoryIcon name={c.icon} className="size-3.5" />
+                {c.name} ({count})
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeletingCat(c);
+                }}
+                title="Xoá danh mục"
+                className={cn(
+                  "grid size-5 shrink-0 place-items-center rounded-full opacity-0 transition group-hover/chip:opacity-100",
+                  filter === c.id
+                    ? "hover:bg-white/20"
+                    : "text-slate-400 hover:bg-rose-50 hover:text-rose-600",
+                )}
+              >
+                <X className="size-3.5" />
+              </button>
+            </span>
           );
         })}
         <FilterChip active={filter === UNCAT} onClick={() => setFilter(UNCAT)}>
@@ -252,6 +294,38 @@ export function ProceduresBoard({
           Bạn có chắc muốn xoá{" "}
           <span className="font-semibold text-slate-900">{deleting?.title}</span>?
           Toàn bộ các bước hướng dẫn sẽ bị xoá và không thể khôi phục.
+        </p>
+      </Dialog>
+
+      {/* Xác nhận xoá danh mục */}
+      <Dialog
+        open={Boolean(deletingCat)}
+        onClose={() => setDeletingCat(null)}
+        size="md"
+        title="Xoá danh mục?"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setDeletingCat(null)} disabled={catBusy}>
+              Huỷ
+            </Button>
+            <Button variant="danger" onClick={confirmDeleteCategory} loading={catBusy}>
+              Xoá
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm text-slate-600">
+          Bạn có chắc muốn xoá danh mục{" "}
+          <span className="font-semibold text-slate-900">{deletingCat?.name}</span>?
+          {deletingCat?._count?.procedures ? (
+            <>
+              {" "}
+              {deletingCat._count.procedures} thủ tục đang thuộc danh mục này sẽ chuyển về{" "}
+              <span className="font-semibold text-slate-900">Chưa phân loại</span> (không bị xoá).
+            </>
+          ) : (
+            " Danh mục này chưa có thủ tục nào."
+          )}
         </p>
       </Dialog>
     </div>

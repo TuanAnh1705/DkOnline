@@ -41,6 +41,10 @@ const search = (kw: string) => {
 };
 // Cổng riêng của dịch vụ công liên thông (không dùng route tìm kiếm như các thủ tục khác).
 const LIEN_THONG = "https://lienthong.dichvucong.gov.vn/#/ke-khai/2.000986";
+// Trang danh sách dịch vụ liên thông (không deep-link vào mã ke-khai cụ thể vì
+// hệ thống đang bảo trì lúc viết spec này nên không kiểm chứng được mã — trang gốc
+// vẫn đúng là nơi hiển thị 2 ô dịch vụ liên thông như trong ảnh hướng dẫn).
+const LIEN_THONG_PORTAL = "https://lienthong.dichvucong.gov.vn/";
 
 // Các bước đăng nhập đầu luồng lặp lại y hệt ở mọi thủ tục hộ tịch.
 const DANG_NHAP: StepSpec[] = [
@@ -609,6 +613,35 @@ export const PROCEDURES: ProcedureSpec[] = [
       { title: "Hoàn tất đính kèm hồ sơ", content: "Giấy tờ đã được đính kèm vào đúng thành phần hồ sơ. Kiểm tra lại danh sách rồi nhấn Bước tiếp theo." },
       { title: "Bước 4 – Nhận kết quả", content: "Chọn hình thức nhận kết quả trực tuyến. Phí và lệ phí sẽ do cán bộ tiếp nhận xác định và liên hệ sau, rồi nhấn Gửi hồ sơ." },
       { title: "Nộp hồ sơ thành công", content: "Màn hình báo Gửi hồ sơ thành công kèm mã hồ sơ. Ghi lại mã này và nhấn Hồ sơ của tôi để theo dõi tiến độ xử lý." },
+    ],
+  },
+
+  {
+    key: "LienThongDangKiKhaiTu",
+    slug: "lien-thong-dang-ky-khai-tu-xoa-thuong-tru-tro-cap-mai-tang",
+    title: "Liên thông: Khai tử – Xóa thường trú – Trợ cấp mai táng, tử tuất",
+    summary:
+      "Hướng dẫn nộp hồ sơ dịch vụ công liên thông: đăng ký khai tử, xóa đăng ký thường trú và hưởng chế độ mai táng phí, tử tuất trên Cổng Dịch vụ công liên thông.",
+    categorySlug: "ho-tich",
+    categoryName: "Hộ tịch",
+    dir: "/Users/tuananhtran/CodeProject/NopHsOnline/LienThongDangKiKhaiTu",
+    imagesDir: "annotated",
+    video: "HuongDan_LienThongDangKyKhaiTu.mp4",
+    registrationUrl: LIEN_THONG_PORTAL,
+    order: 17,
+    steps: [
+      { title: "Truy cập Cổng Dịch vụ công", content: "Vào địa chỉ dichvucong.gov.vn và nhấn nút Đăng nhập ở góc trên bên phải màn hình để đăng nhập bằng tài khoản định danh điện tử VNeID." },
+      { title: "Nhập mã xác nhận đăng nhập", content: "Sau khi nhập số định danh cá nhân và mật khẩu VNeID, mở ứng dụng VNeID để lấy mã xác nhận gồm sáu chữ số rồi nhập vào các ô hiển thị." },
+      { title: "Xác nhận chia sẻ thông tin", content: "Tích chọn ô đồng ý rồi nhấn Xác nhận chia sẻ để cho phép Hệ thống định danh và xác thực điện tử chia sẻ dữ liệu với Cổng Dịch vụ công quốc gia." },
+      { title: "Vào Dịch vụ công liên thông", content: "Sau khi đăng nhập thành công, tại trang chủ Cổng Dịch vụ công quốc gia, nhấn ô Dịch vụ công liên thông: Khai sinh, Khai tử." },
+      { title: "Chọn thủ tục liên thông khai tử", content: "Tại trang Dịch vụ công liên thông, chọn ô Thủ tục liên thông về đăng ký khai tử, xóa đăng ký thường trú, hưởng chế độ tử tuất (trợ cấp tuất và trợ cấp mai táng)/hỗ trợ chi phí mai táng/hưởng mai táng phí." },
+      { title: "Bước 1 – Chọn đối tượng hưởng trợ cấp", content: "Chọn tỉnh thành, phường xã cho cơ quan đăng ký khai tử, cơ quan xóa đăng ký thường trú, sau đó chọn đúng nhóm đối tượng hưởng trợ cấp mai táng phí, tử tuất trong danh sách sổ xuống." },
+      { title: "Xác nhận cơ quan thực hiện", content: "Kiểm tra lại cơ quan thực hiện đăng ký khai tử, xóa đăng ký thường trú và giải quyết chế độ mai táng phí, tử tuất, rồi nhấn Chuyển bước tiếp theo." },
+      { title: "Bước 2 – Kê khai thông tin người yêu cầu", content: "Hệ thống tự điền thông tin người yêu cầu từ tài khoản định danh điện tử; có thể nhấn Xác thực với CSDLQG về dân cư để cập nhật, sau đó điền quan hệ với người chết, số điện thoại và email." },
+      { title: "Kê khai quê quán & hình thức nhận trợ cấp", content: "Cuộn xuống điền quê quán của người nhận mai táng phí, chọn hình thức nhận trợ cấp và nơi nhận tiền mặt, rồi nhấn Chuyển bước tiếp theo." },
+      { title: "Bước 3 – Xem lại các tờ khai chi tiết", content: "Kiểm tra lại nội dung ba tờ khai được tạo tự động: Tờ khai đăng ký khai tử, Tờ khai thay đổi thông tin cư trú (CT01) và Tờ khai đề nghị hỗ trợ chi phí mai táng, rồi nhấn Chuyển bước tiếp theo." },
+      { title: "Bước 4 – Đính kèm thành phần hồ sơ", content: "Nhấn Chọn tệp tin ở từng dòng để tải lên bản chụp Giấy báo tử hoặc giấy tờ, chứng cứ chứng minh sự kiện chết, rồi nhấn Chuyển bước tiếp theo." },
+      { title: "Bước 5 – Hoàn thành và nộp hồ sơ", content: "Kiểm tra hình thức và nơi nhận tiền trợ cấp mai táng phí, nhập mã kiểm tra rồi nhấn Hoàn thành để nộp hồ sơ." },
     ],
   },
 ];

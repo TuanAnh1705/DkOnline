@@ -11,6 +11,21 @@ const COMBINING_MARKS = new RegExp(
   "g",
 );
 
+// Sinh link tìm kiếm thủ tục trên Cổng Dịch vụ công quốc gia từ tên thủ tục —
+// dùng khi người đăng không tự nhập "Link đăng ký hồ sơ". Bỏ dấu câu, gộp
+// khoảng trắng thừa rồi mã hoá thành ?keyword=..., đúng dạng link mẫu
+// (vd: "chứng thực chữ ký" -> .../tim-kiem-thu-tuc-hanh-chinh?keyword=ch%E1%BB%A9ng...).
+// Chỉ dùng route /tim-kiem-thu-tuc-hanh-chinh vì đây là route còn kiểm chứng hoạt động
+// (xem tools/TIENDO.md) — không suy ra link chi tiết thủ tục vì mỗi thủ tục có mã riêng.
+export function buildRegistrationUrl(title: string): string {
+  const clean = title
+    .replace(/[^\p{L}\p{N} ]+/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+  return `https://dichvucong.gov.vn/tim-kiem-thu-tuc-hanh-chinh?keyword=${encodeURIComponent(clean)}`;
+}
+
 // Chuyển tiếng Việt có dấu -> slug không dấu
 export function slugify(input: string): string {
   return input

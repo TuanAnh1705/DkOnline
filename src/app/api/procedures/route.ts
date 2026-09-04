@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { procedureInputSchema } from "@/lib/validation";
-import { slugify } from "@/lib/utils";
+import { buildRegistrationUrl, slugify } from "@/lib/utils";
 
 export async function GET() {
   const procedures = await prisma.procedure.findMany({
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       categoryId: data.categoryId || null,
       thumbnailUrl: data.thumbnailUrl || null,
       videoUrl: data.videoUrl || null,
-      registrationUrl: data.registrationUrl || null,
+      registrationUrl: data.registrationUrl || buildRegistrationUrl(data.title),
       status: data.status,
       steps: {
         create: data.steps.map((s, idx) => ({

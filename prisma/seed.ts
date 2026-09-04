@@ -38,20 +38,6 @@ async function main() {
       order: 1,
       description: "Khai sinh, kết hôn, khai tử, xác nhận tình trạng hôn nhân…",
     },
-    {
-      name: "Cư trú & giấy tờ tùy thân",
-      icon: "Home",
-      color: "#7c3aed",
-      order: 2,
-      description: "Đăng ký thường trú, tạm trú, căn cước công dân…",
-    },
-    {
-      name: "Bảo hiểm y tế",
-      icon: "HeartPulse",
-      color: "#059669",
-      order: 3,
-      description: "Cấp, cấp lại thẻ bảo hiểm y tế…",
-    },
   ];
   const catBySlug: Record<string, string> = {};
   for (const c of categories) {
